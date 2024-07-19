@@ -1,0 +1,17 @@
+.enhancedExample {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.enhancedExample > .code-header {
+  margin-top: 1rem;
+  font-weight: lighter;
+  padding-left: 1rem;
+}
+
+* {
+  overflow-anchor: none !important;
+  scroll-snap-stop: normal !important;
+  overscroll-behavior: unset !important;
+  scroll-behavior: unset !important;
+}

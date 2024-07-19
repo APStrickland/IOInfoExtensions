@@ -1,0 +1,1946 @@
+<XmlCommentDocs>
+    <IOInfoExtensions>
+        <DirectoryInfoExtensions>
+            <Class>
+                <summary>Extension methods for the <c>System.IO.DirectoryInfo</c> class.</summary>
+            </Class>
+            <Members>
+                <Member name="GetDirectory">
+                    <summary>Returns a <c>DirectoryInfo</c> object for a child directory with the specified name.</summary>
+                    <remarks>
+                        <p>
+                            Creates a new <c>DirectoryInfo</c> object referencing a child directory of the calling object. The newly created
+                            <c>DirectoryInfo</c> object will have the given <b>name</b> and be validated against the remaining parameters.
+                        </p>
+                        <p>
+                            Specifying nested directories in <b>name</b> is supported.
+                        </p>
+                    </remarks>
+                    <param name="directory">The calling <c>DirectoryInfo</c> object that will be the parent of the returned <c>DirectoryInfo</c> object.</param>
+                    <param name="name">The name of the child directory to return.</param>
+                    <param name="resolve">If set to true the child directory's existance will be validated.</param>
+                    <param name="ignoreCase">If set to true the search for the child directory will be case in-sensitive.</param>
+                    <returns><c>System.IO.DirectoryInfo</c> referencing the desired child directory.</returns>
+                    <example>
+                        <summary>Get an existing child directory.</summary>
+                        <remarks>
+                            <p>
+                                This returns a <c>DirectoryInfo</c> object for the child directory named <i>ChildDir1</i>.
+                                It uses default values for the <b>resolve</b> and <b>ignoreCase</b> parameters.
+                            </p>
+                        </remarks>
+                        <code language="csharp">
+                            var demoRoot = new DirectoryInfo("C:\\Demo");
+
+                            Console.WriteLine("First level children:");
+                            demoRoot.GetFileSystemInfos().ToList().ForEach(x =&gt; Console.WriteLine($"\t{x.FullName}"));
+
+                            var child = demoRoot.GetDirectory("ChildDir1");
+                            Console.WriteLine($"Child FullName:\n\t{child.FullName}");
+                            Console.WriteLine($"Child Type:\n\t{child.GetType()}");
+                            Console.WriteLine($"Child Exists:\n\t{child.Exists}");
+
+                            /*
+                            Output:
+                            First level children:
+                                    C:\Demo\ChildDir1
+                                    C:\Demo\ChildDir2
+                                    C:\Demo\ChildFile1.txt
+                                    C:\Demo\ChildFile2.txt
+                            Child FullName:
+                                    C:\Demo\ChildDir1
+                            Child Type:
+                                    System.IO.DirectoryInfo
+                            Child Exists:
+                                    True
+                            */
+                        </code>
+                        <code language="powershell">
+                            $directory = New-Object System.IO.DirectoryInfo 'C:\Demo'
+
+                            Write-Host "First level children:"
+                            $directory.GetFileSystemInfos().FullName | ForEach-Object { Write-Host "`t$_" }
+
+                            $child = $directory.GetDirectory('ChildDir1')
+                            Write-Host "Child FullName:`n`t$($child.FullName)"
+                            Write-Host "Child Type:`n`t$($child.GetType().FullName)"
+                            Write-Host "Child Exists:`n`t$($child.Exists)"
+
+                            &lt;#
+                            Output:
+                            First level children:
+                                    C:\Demo\ChildDir1
+                                    C:\Demo\ChildDir2
+                                    C:\Demo\ChildFile1.txt
+                                    C:\Demo\ChildFile2.txt
+                            Child FullName:
+                                    C:\Demo\ChildDir1
+                            Child Type:
+                                    System.IO.DirectoryInfo
+                            Child Exists:
+                                    True
+                            #&gt;
+                        </code>
+                    </example>
+                    <example>
+                        <summary>Get a non-existing nested child directory.</summary>
+                        <remarks>
+                            <p>
+                                This returns a <c>DirectoryInfo</c> object for the nested child directory named <i>ChildDir3\InnerChildDir3</i>.
+                                It uses default values for the <b>resolve</b> and <b>ignoreCase</b> parameters.
+                            </p>
+                        </remarks>
+                        <code language="csharp">
+                            var demoRoot = new DirectoryInfo("C:\\Demo");
+
+                            Console.WriteLine("Children:");
+                            demoRoot.GetFileSystemInfos("*", SearchOption.AllDirectories)
+                                .ToList()
+                                .ForEach(x =&gt; Console.WriteLine($"\t{x.FullName}"));
+
+                            var child = demoRoot.GetDirectory("ChildDir3\\InnerChildDir3");
+                            Console.WriteLine($"Child FullName:\n\t{child.FullName}");
+                            Console.WriteLine($"Child Type:\n\t{child.GetType()}");
+                            Console.WriteLine($"Child Exists:\n\t{child.Exists}");
+
+                            /*
+                            Output:
+                            Children:
+                                    C:\Demo\ChildDir1
+                                    C:\Demo\ChildDir2
+                                    C:\Demo\ChildFile1.txt
+                                    C:\Demo\ChildFile2.txt
+                                    C:\Demo\ChildDir2\ChildFile1.txt
+                                    C:\Demo\ChildDir2\ChildFile2.txt
+                            Child FullName:
+                                    C:\Demo\ChildDir3\InnerChildDir3
+                            Child Type:
+                                    System.IO.DirectoryInfo
+                            Child Exists:
+                                    False
+                            */
+                        </code>
+                        <code language="powershell">
+                            $directory = New-Object System.IO.DirectoryInfo 'C:\Demo'
+
+                            Write-Host "Children:"
+                            $directory.GetFileSystemInfos("*", [System.IO.SearchOption]::AllDirectories).FullName |
+                                ForEach-Object { Write-Host "`t$_" }
+
+                            $child = $directory.GetDirectory('ChildDir3\InnerChildDir3')
+                            Write-Host "Child FullName:`n`t$($child.FullName)"
+                            Write-Host "Child Type:`n`t$($child.GetType().FullName)"
+                            Write-Host "Child Exists:`n`t$($child.Exists)"
+
+                            &lt;#
+                            Output:
+                            Children:
+                                    C:\Demo\ChildDir1
+                                    C:\Demo\ChildDir2
+                                    C:\Demo\ChildFile1.txt
+                                    C:\Demo\ChildFile2.txt
+                                    C:\Demo\ChildDir2\ChildFile1.txt
+                                    C:\Demo\ChildDir2\ChildFile2.txt
+                            Child FullName:
+                                    C:\Demo\ChildDir3\InnerChildDir3
+                            Child Type:
+                                    System.IO.DirectoryInfo
+                            Child Exists:
+                                    False
+                            #&gt;
+                        </code>
+                    </example>
+                    <example>
+                        <summary>Resolve a child directory using case sensitivity.</summary>
+                        <remarks><p>Throws an exception because the existance and case sensitivity validations failed.</p></remarks>
+                        <code language="csharp">
+                            var demoRoot = new DirectoryInfo("C:\\Demo");
+
+                            Console.WriteLine("First level children:");
+                            demoRoot.GetFileSystemInfos().ToList().ForEach(x =&gt; Console.WriteLine($"\t{x.FullName}"));
+
+                            try
+                            {
+                                _ = demoRoot.GetDirectory("childdir1", true, false);
+                            }
+                            catch (Exception ex)
+                            {
+                                var stringArgs = new[] {
+                                    ex.GetType().ToString(),
+                                    ex.Message,
+                                    ex.StackTrace.Substring(0, ex.StackTrace.IndexOf(Environment.NewLine))
+                                };
+
+                                Console.Error.WriteLine(string.Format("\nError: {0}: {1}\n{2}\n", stringArgs));
+                            }
+
+                            /*
+                            Output:
+                            First level children:
+                                    C:\Demo\ChildDir1
+                                    C:\Demo\ChildDir2
+                                    C:\Demo\ChildFile1.txt
+                                    C:\Demo\ChildFile2.txt
+
+                            Error: System.IO.DirectoryNotFoundException: A child named 'childdir1' already exists but with a different case: ChildDir1.
+                                at IOInfoExtensions.DirectoryInfoExtensions.GetDirectory(DirectoryInfo directory, String name, Boolean resolve, Boolean ignoreCase)
+                            */
+                        </code>
+                        <code language="powershell">
+                            $directory = New-Object System.IO.DirectoryInfo 'C:\Demo'
+
+                            Write-Host "First level children:"
+                            $directory.GetFileSystemInfos().FullName | ForEach-Object { Write-Host "`t$_" }
+
+                            try
+                            {
+                                $null = $directory.GetDirectory('childdir1', $true, $false)
+                            }
+                            catch
+                            {
+                                $stringArgs = @(
+                                    $_.Exception.GetType().ToString(),
+                                    $_.Exception.Message,
+                                    $_.Exception.StackTrace.Substring(0, $_.Exception.StackTrace.IndexOf([Environment]::NewLine))
+                                )
+
+                                Write-Host ("`nError: {0}: {1}`n{2}`n" -f $stringArgs)
+                                $error.Clear()
+                            }
+
+                            &lt;#
+                            Output:
+                            First level children:
+                                    C:\Demo\ChildDir1
+                                    C:\Demo\ChildDir2
+                                    C:\Demo\ChildFile1.txt
+                                    C:\Demo\ChildFile2.txt
+
+                            Error: System.IO.DirectoryNotFoundException: A child named 'childdir1' already exists but with a different case: ChildDir1.
+                                at IOInfoExtensions.DirectoryInfoExtensions.GetDirectory(DirectoryInfo directory, String name, Boolean resolve, Boolean ignoreCase)
+                            #&gt;
+                        </code>
+                    </example>
+                    <exception cref="ArgumentException">If the <b>name</b> parameter value is null, empty, or just whitespace.</exception>
+                    <exception cref="Exception">If the <b>name</b> matched multiple child items. This will happen if a wildcard was passed as part of the name.</exception>
+                    <exception cref="DirectoryNotFoundException">If the name <b>resolves</b> to a child file, <b>resolve</b> is set to <i>true</i> and the child directory does not exist, or if <b>ignoreCase</b> is set to <i>false</i> and the casing doesn't match.</exception>
+                </Member>
+                <Member name="GetFile">
+                    <summary>Returns a <c>FileInfo</c> object for the child file with the specified name.</summary>
+                    <remarks>
+                        <p>
+                            Creates a new <c>FileInfo</c> object referencing a child file of the calling object. The newly created
+                            <c>FileInfo</c> object will have the given <b>name</b> and be validated against the remaining parameters.
+                        </p>
+                        <p>
+                            Specifying nested files in <b>name</b> is supported.
+                        </p>
+                    </remarks>
+                    <param name="directory">The calling <c>DirectoryInfo</c> object that will be the parent of the returned <c>FileInfo</c> object.</param>
+                    <param name="name">The name of the child file to return.</param>
+                    <param name="resolve">If set to true the child file's existance will be validated.</param>
+                    <param name="ignoreCase">If set to true the search for the child file will be case in-sensitive.</param>
+                    <returns><c>System.IO.FileInfo</c> referencing the desired child file.</returns>
+                    <example>
+                        <summary>Get an existing child file.</summary>
+                        <remarks>
+                            <p>
+                                This returns a <c>FileInfo</c> object for the child file named <i>ChildFile1.txt</i>.
+                                It uses default values for the <b>resolve</b> and <b>ignoreCase</b> parameters.
+                            </p>
+                        </remarks>
+                        <code language="csharp">
+                            var demoRoot = new DirectoryInfo("C:\\Demo");
+
+                            Console.WriteLine("First level children:");
+                            demoRoot.GetFileSystemInfos().ToList().ForEach(x =&gt; Console.WriteLine($"\t{x.FullName}"));
+
+                            var child = demoRoot.GetFile("ChildFile1.txt");
+                            Console.WriteLine($"Child FullName:\n\t{child.FullName}");
+                            Console.WriteLine($"Child Type:\n\t{child.GetType()}");
+                            Console.WriteLine($"Child Exists:\n\t{child.Exists}");
+
+                            /*
+                            Output:
+                            First level children:
+                                    C:\Demo\ChildDir1
+                                    C:\Demo\ChildDir2
+                                    C:\Demo\ChildFile1.txt
+                                    C:\Demo\ChildFile2.txt
+                            Child FullName:
+                                    C:\Demo\ChildFile1.txt
+                            Child Type:
+                                    System.IO.FileInfo
+                            Child Exists:
+                                    True
+                            */
+                        </code>
+                        <code language="powershell">
+                            $directory = New-Object System.IO.DirectoryInfo 'C:\Demo'
+
+                            Write-Host "First level children:"
+                            $directory.GetFileSystemInfos().FullName | ForEach-Object { Write-Host "`t$_" }
+
+                            $child = $directory.GetFile('ChildFile1.txt')
+                            Write-Host "Child FullName:`n`t$($child.FullName)"
+                            Write-Host "Child Type:`n`t$($child.GetType().FullName)"
+                            Write-Host "Child Exists:`n`t$($child.Exists)"
+
+                            &lt;#
+                            Output:
+                            First level children:
+                                    C:\Demo\ChildDir1
+                                    C:\Demo\ChildDir2
+                                    C:\Demo\ChildFile1.txt
+                                    C:\Demo\ChildFile2.txt
+                            Child FullName:
+                                    C:\Demo\ChildFile1.txt
+                            Child Type:
+                                    System.IO.FileInfo
+                            Child Exists:
+                                    True
+                            #&gt;
+                        </code>
+                    </example>
+                    <example>
+                        <summary>Get a non-existing nested child file.</summary>
+                        <remarks>
+                            <p>
+                                This returns a <c>FileInfo</c> object for the nested child file named <i>ChildDir3\ChildFile3.txt</i>.
+                                It uses default values for the <b>resolve</b> and <b>ignoreCase</b> parameters.
+                            </p>
+                        </remarks>
+                        <code language="csharp">
+                            var demoRoot = new DirectoryInfo("C:\\Demo");
+
+                            Console.WriteLine("Children:");
+                            demoRoot.GetFileSystemInfos("*", SearchOption.AllDirectories)
+                                .ToList()
+                                .ForEach(x =&gt; Console.WriteLine($"\t{x.FullName}"));
+
+                            var child = demoRoot.GetFile("ChildDir3\\ChildFile3.txt");
+                            Console.WriteLine($"Child FullName:\n\t{child.FullName}");
+                            Console.WriteLine($"Child Type:\n\t{child.GetType()}");
+                            Console.WriteLine($"Child Exists:\n\t{child.Exists}");
+
+                            /*
+                            Output:
+                            Children:
+                                    C:\Demo\ChildDir1
+                                    C:\Demo\ChildDir2
+                                    C:\Demo\ChildFile1.txt
+                                    C:\Demo\ChildFile2.txt
+                                    C:\Demo\ChildDir2\ChildFile1.txt
+                                    C:\Demo\ChildDir2\ChildFile2.txt
+                            Child FullName:
+                                    C:\Demo\ChildDir3\ChildFile3.txt
+                            Child Type:
+                                    System.IO.FileInfo
+                            Child Exists:
+                                    False
+                            */
+                        </code>
+                        <code language="powershell">
+                            $directory = New-Object System.IO.DirectoryInfo 'C:\Demo'
+
+                            Write-Host "Children:"
+                            $directory.GetFileSystemInfos("*", [System.IO.SearchOption]::AllDirectories).FullName |
+                                ForEach-Object { Write-Host "`t$_" }
+
+                            $child = $directory.GetFile('ChildDir3\ChildFile3.txt')
+                            Write-Host "Child FullName:`n`t$($child.FullName)"
+                            Write-Host "Child Type:`n`t$($child.GetType().FullName)"
+                            Write-Host "Child Exists:`n`t$($child.Exists)"
+
+                            &lt;#
+                            Output:
+                            Children:
+                                    C:\Demo\ChildDir1
+                                    C:\Demo\ChildDir2
+                                    C:\Demo\ChildFile1.txt
+                                    C:\Demo\ChildFile2.txt
+                                    C:\Demo\ChildDir2\ChildFile1.txt
+                                    C:\Demo\ChildDir2\ChildFile2.txt
+                            Child FullName:
+                                    C:\Demo\ChildDir3\ChildFile3.txt
+                            Child Type:
+                                    System.IO.FileInfo
+                            Child Exists:
+                                    False
+                            #&gt;
+                        </code>
+                    </example>
+                    <example>
+                        <summary>Resolve a child file using case sensitivity.</summary>
+                        <remarks><p>Throws an exception because the existance and case sensitivity validations failed.</p></remarks>
+                        <code language="csharp">
+                            var demoRoot = new DirectoryInfo("C:\\Demo");
+
+                            Console.WriteLine("First level children:");
+                            demoRoot.GetFileSystemInfos().ToList().ForEach(x =&gt; Console.WriteLine($"\t{x.FullName}"));
+
+                            try
+                            {
+                                _ = demoRoot.GetFile("childfile1.txt", true, false);
+                            }
+                            catch(Exception ex)
+                            {
+                                var stringArgs = new[] {
+                                    ex.GetType().ToString(),
+                                    ex.Message,
+                                    ex.StackTrace.Substring(0, ex.StackTrace.IndexOf(Environment.NewLine))
+                                };
+
+                                Console.Error.WriteLine(string.Format("\nError: {0}: {1}\n{2}\n", stringArgs));
+                            }
+
+                            /*
+                            Output:
+                            First level children:
+                                    C:\Demo\ChildDir1
+                                    C:\Demo\ChildDir2
+                                    C:\Demo\ChildFile1.txt
+                                    C:\Demo\ChildFile2.txt
+
+                            Error: System.IO.FileNotFoundException: A child named 'childfile1.txt' already exists but with a different case: ChildFile1.txt.
+                                at IOInfoExtensions.DirectoryInfoExtensions.GetFile(DirectoryInfo directory, String name, Boolean resolve, Boolean ignoreCase)
+                            */
+                        </code>
+                        <code language="powershell">
+                            $directory = New-Object System.IO.DirectoryInfo 'C:\Demo'
+
+                            Write-Host "First level children:"
+                            $directory.GetFileSystemInfos().FullName | ForEach-Object { Write-Host "`t$_" }
+
+                            try
+                            {
+                                $null = $directory.GetFile('childfile1.txt', $true, $false)
+                            }
+                            catch
+                            {
+                                $stringArgs = @(
+                                    $_.Exception.GetType().ToString(),
+                                    $_.Exception.Message,
+                                    $_.Exception.StackTrace.Substring(0, $_.Exception.StackTrace.IndexOf([Environment]::NewLine))
+                                )
+
+                                Write-Host ("`nError: {0}: {1}`n{2}`n" -f $stringArgs)
+                                $error.Clear()
+                            }
+
+                            &lt;#
+                            Output:
+                            First level children:
+                                    C:\Demo\ChildDir1
+                                    C:\Demo\ChildDir2
+                                    C:\Demo\ChildFile1.txt
+                                    C:\Demo\ChildFile2.txt
+
+                            Error: System.IO.FileNotFoundException: A child named 'childfile1.txt' already exists but with a different case: ChildFile1.txt.
+                               at IOInfoExtensions.DirectoryInfoExtensions.GetFile(DirectoryInfo directory, String name, Boolean resolve, Boolean ignoreCase)
+                            #&gt;
+                        </code>
+                    </example>
+                    <exception cref="ArgumentException">If the <b>name</b> is null, empty, or just whitespace.</exception>
+                    <exception cref="Exception">If the <b>name</b> matched multiple child items. This will happen if a wildcard was passed as part of the name.</exception>
+                    <exception cref="FileNotFoundException">If the <b>name</b> resolves to a child directory, <b>resolve</b> is set to <i>true</i> and the child file does not exist, or if <b>ignoreCase</b> is set to <i>false</i> and the casing doesn't match.</exception>
+                </Member>
+                <Member name="DeleteContent">
+                    <summary>Deletes all the content within the directory.</summary>
+                    <remarks>
+                        <p>
+                            This method deletes all the files and directories within the calling <c>DirectoryInfo</c> object.
+                        </p>
+                        <p>
+                            It does not delete the directory itself.
+                        </p>
+                    </remarks>
+                    <param name="directory">The calling <c>DirectoryInfo</c> object.</param>
+                    <returns>N/A</returns>
+                    <example>
+                        <summary>Delete all content within a directory.</summary>
+                        <remarks>Recursively deletes all files and directories within the given directory but does not delete the directory itself.</remarks>
+                        <code language="csharp">
+                            var demoRoot = new DirectoryInfo("C:\\Demo");
+                            var children = demoRoot.GetFileSystemInfos("*", SearchOption.AllDirectories).ToList();
+
+                            Console.WriteLine($"Number of Children:\n\t{children.Count}");
+                            Console.WriteLine("Children:");
+                            children.ForEach(x =&gt; Console.WriteLine($"\t{x.FullName}"));
+
+                            demoRoot.DeleteContent();
+                            children = demoRoot.GetFileSystemInfos("*", SearchOption.AllDirectories).ToList();
+                            Console.WriteLine($"Number of Children after delete:\n\t{children.Count}");
+                            Console.WriteLine($"Root Exists:\n\t{demoRoot.Exists}");
+
+                            /*
+                            Output:
+                            Number of Children:
+                                    6
+                            Children:
+                                    C:\Demo\ChildDir1
+                                    C:\Demo\ChildDir2
+                                    C:\Demo\ChildFile1.txt
+                                    C:\Demo\ChildFile2.txt
+                                    C:\Demo\ChildDir2\ChildFile1.txt
+                                    C:\Demo\ChildDir2\ChildFile2.txt
+                            Number of Children after delete:
+                                    0
+                            Root Exists:
+                                    True
+                            */
+                        </code>
+                        <code language="powershell">
+                            $directory = New-Object System.IO.DirectoryInfo 'C:\Demo'
+                            $children = $directory.GetFileSystemInfos("*", [System.IO.SearchOption]::AllDirectories)
+
+                            Write-Host "Number of Children:`n`t$($children.Count)"
+                            Write-Host "Children:"
+                            $children.FullName | ForEach-Object { Write-Host "`t$_" }
+
+                            $directory.DeleteContent()
+                            $children = $directory.GetFileSystemInfos("*", [System.IO.SearchOption]::AllDirectories)
+                            Write-Host "Number of Children after delete:`n`t$($children.Count)"
+                            Write-Host "Root Exists:`n`t$($directory.Exists)"
+
+                            &lt;#
+                            Output:
+                            Number of Children:
+                                    6
+                            Children:
+                                    C:\Demo\ChildDir1
+                                    C:\Demo\ChildDir2
+                                    C:\Demo\ChildFile1.txt
+                                    C:\Demo\ChildFile2.txt
+                                    C:\Demo\ChildDir2\ChildFile1.txt
+                                    C:\Demo\ChildDir2\ChildFile2.txt
+                            Number of Children after delete:
+                                    0
+                            Root Exists:
+                                    True
+                            #&gt;
+                        </code>
+                    </example>
+                    <example>
+                        <summary>Safely calls DeleteContent even if no content exists.</summary>
+                        <remarks>This demonstrates that DeleteContent can be safely called without needing to check for existence.</remarks>
+                        <code language="csharp">
+                            var demoRoot = new DirectoryInfo("C:\\Demo");
+                            var children = demoRoot.GetFileSystemInfos("*", SearchOption.AllDirectories).ToList();
+                            Console.WriteLine($"Number of Children:\n\t{children.Count}");
+
+                            Console.WriteLine("Deleting content...");
+                            demoRoot.DeleteContent();
+                            children = demoRoot.GetFileSystemInfos("*", SearchOption.AllDirectories).ToList();
+                            Console.WriteLine($"Number of Children after delete:\n\t{children.Count}");
+
+                            Console.WriteLine("Deleting content...");
+                            demoRoot.DeleteContent();
+                            children = demoRoot.GetFileSystemInfos("*", SearchOption.AllDirectories).ToList();
+                            Console.WriteLine($"Number of Children after second delete:\n\t{children.Count}");
+
+                            Console.WriteLine($"Root Exists:\n\t{demoRoot.Exists}");
+
+                            Console.WriteLine("Deleting Root...");
+                            demoRoot.Delete();
+                            demoRoot.Refresh();
+                            Console.WriteLine($"Root Exists after delete:\n\t{demoRoot.Exists}");
+
+                            Console.WriteLine("Deleting content...");
+                            demoRoot.DeleteContent();
+                            children = demoRoot.GetFileSystemInfos("*", SearchOption.AllDirectories).ToList();
+                            Console.WriteLine($"Number of Children after root delete:\n\t{children.Count}");
+
+                            /*
+                            Output:
+
+                            Number of Children:
+                                    6
+                            Deleting content..."
+                            Number of Children after delete:
+                                    0
+                            Deleting content..."
+                            Number of Children after second delete:
+                                    0
+                            Root Exists:
+                                    True
+                            Deleting Root...
+                            Root Exists after delete:
+                                    False
+                            Deleting content...
+                            Number of Children after root delete:
+                                    0
+                            */
+                        </code>
+                        <code language="powershell">
+                            $directory = New-Object System.IO.DirectoryInfo 'C:\Demo'
+                            $children = $directory.GetFileSystemInfos("*", [System.IO.SearchOption]::AllDirectories)
+                            Write-Host "Number of Children:`n`t$($children.Count)"
+
+                            Write-Host "Deleting content..."
+                            $directory.DeleteContent()
+                            $children = $directory.GetFileSystemInfos("*", [System.IO.SearchOption]::AllDirectories)
+                            Write-Host "Number of Children after delete:`n`t$($children.Count)"
+
+                            Write-Host "Deleting content..."
+                            $directory.DeleteContent()
+                            $children = $directory.GetFileSystemInfos("*", [System.IO.SearchOption]::AllDirectories)
+                            Write-Host "Number of Children after second delete:`n`t$($children.Count)"
+
+                            Write-Host "Root Exists:`n`t$($directory.Exists)"
+
+                            Write-Host "Deleting Root..."
+                            $directory.Delete()
+                            $directory.Refresh()
+                            Write-Host "Root Exists after delete:`n`t$($directory.Exists)"
+
+                            Write-Host "Deleting content..."
+                            $directory.DeleteContent()
+                            $children = $directory.GetFileSystemInfos("*", [System.IO.SearchOption]::AllDirectories)
+                            Write-Host "Number of Children after root delete:`n`t$($children.Count)"
+
+                            &lt;#
+                            Output:
+                            Number of Children:
+                                    6
+                            Number of Children after delete:
+                                    0
+                            Number of Children after second delete:
+                                    0
+                            Root Exists:
+                                    True
+                            Deleting Root...
+                            Root Exists after delete:
+                                    False
+                            Deleting content...
+                            Number of Children after root delete:
+                                    0
+                            #&gt;
+                        </code>
+                    </example>
+                </Member>
+                <Member name="CopyContentTo">
+                    <summary>Copies the content of the calling <c>DirectoryInfo</c> object to the destination directory.</summary>
+                    <remarks>
+                        <p>
+                            This method copies all the files and directories within the calling <c>DirectoryInfo</c> object to the
+                            specified destination directory.
+                        </p>
+                    </remarks>
+                    <param name="source">The calling <c>DirectoryInfo</c> object to copy the contents of.</param>
+                    <param name="destination">The directory to copy all the contents to.</param>
+                    <param name="copyEmptyDirectories">If set to true empty child directories will be created in the destitnation.</param>
+                    <param name="overwrite">Overwrite any conflicting files at the destination.</param>
+                    <param name="cleanTarget">Delete all contents of the destination directory before copying.</param>
+                    <returns>N/A</returns>
+                    <example>
+                        <summary>Copy files and their directory structures.</summary>
+                        <remarks>
+                            <p>
+                                This copies all the files and directories within the source directory to the destination directory but does not
+                                copy empty directories.
+                            </p>
+                            <dl>
+                                <dt>Notice:</dt>
+                                <dd>- The empty directory <i>ChildDir1</i> is not copied to the destination.</dd>
+                            </dl>
+                        </remarks>
+                        <code language="csharp">
+                            var source = new DirectoryInfo("C:\\Demo");
+                            var destination = new DirectoryInfo("C:\\DemoCopy");
+
+                            Console.WriteLine("Source Children:");
+                            source.GetFileSystemInfos("*", SearchOption.AllDirectories)
+                                .ToList()
+                                .ForEach(x =&gt; Console.WriteLine($"\t{x.FullName}"));
+
+                            Console.WriteLine($"Destination Exists:\n\t{destination.Exists}");
+
+                            Console.WriteLine("Copying content...");
+                            source.CopyContentTo(destination);
+
+                            Console.WriteLine($"Destination Exists after copy:\n\t{destination.Exists}");
+                            Console.WriteLine("Destination Children:");
+                            destination.GetFileSystemInfos("*", SearchOption.AllDirectories)
+                                .ToList()
+                                .ForEach(x =&gt; Console.WriteLine($"\t{x.FullName}"));
+
+                            /*
+                            Output:
+                            Source Children:
+                                    C:\Demo\ChildDir1
+                                    C:\Demo\ChildDir2
+                                    C:\Demo\ChildFile1.txt
+                                    C:\Demo\ChildFile2.txt
+                                    C:\Demo\ChildDir2\ChildFile1.txt
+                                    C:\Demo\ChildDir2\ChildFile2.txt
+                            Destination Exists:
+                                    False
+                            Copying content...
+                            Destination Exists after copy:
+                                    True
+                            Destination Children:
+                                    C:\DemoCopy\ChildDir2
+                                    C:\DemoCopy\ChildFile1.txt
+                                    C:\DemoCopy\ChildFile2.txt
+                                    C:\DemoCopy\ChildDir2\ChildFile1.txt
+                                    C:\DemoCopy\ChildDir2\ChildFile2.txt
+                            */
+                        </code>
+                        <code language="powershell">
+                            $source = New-Object System.IO.DirectoryInfo 'C:\Demo'
+                            $destination = New-Object System.IO.DirectoryInfo 'C:\DemoCopy'
+
+                            Write-Host "Source Children:"
+                            $source.GetFileSystemInfos("*", [System.IO.SearchOption]::AllDirectories).FullName |
+                                ForEach-Object { Write-Host "`t$_" }
+
+                            Write-Host "Destination Exists:`n`t$($destination.Exists)"
+
+                            Write-Host "Copying content..."
+                            $source.CopyContentTo($destination)
+
+                            Write-Host "Destination Exists after copy:`n`t$($destination.Exists)"
+                            Write-Host "Destination Children:"
+                            $destination.GetFileSystemInfos("*", [System.IO.SearchOption]::AllDirectories).FullName |
+                                ForEach-Object { Write-Host "`t$_" }
+
+                            &lt;#
+                            Output:
+                            Source Children:
+                                    C:\Demo\ChildDir1
+                                    C:\Demo\ChildDir2
+                                    C:\Demo\ChildFile1.txt
+                                    C:\Demo\ChildFile2.txt
+                                    C:\Demo\ChildDir2\ChildFile1.txt
+                                    C:\Demo\ChildDir2\ChildFile2.txt
+                            Destination Exists:
+                                    False
+                            Copying content...
+                            Destination Exists after copy:
+                                    True
+                            Destination Children:
+                                    C:\DemoCopy\ChildDir2
+                                    C:\DemoCopy\ChildFile1.txt
+                                    C:\DemoCopy\ChildFile2.txt
+                                    C:\DemoCopy\ChildDir2\ChildFile1.txt
+                                    C:\DemoCopy\ChildDir2\ChildFile2.txt
+                            #&gt;
+                        </code>
+                    </example>
+                    <example>
+                        <summary>Copies all items, including empty directories.</summary>
+                        <remarks>
+                            <p>
+                                This copies all the files and directories within the source directory to the destination directory.
+                            </p>
+                            <dl>
+                                <dt>Notice:</dt>
+                                <dd>- The empty directory <i>ChildDir1</i> is copied to the destination.</dd>
+                            </dl>
+                        </remarks>
+                        <code language="csharp">
+                            var source = new DirectoryInfo("C:\\Demo");
+                            var destination = new DirectoryInfo("C:\\DemoCopy");
+
+                            Console.WriteLine("Source Children:");
+                            source.GetFileSystemInfos("*", SearchOption.AllDirectories)
+                                .ToList()
+                                .ForEach(x =&gt; Console.WriteLine($"\t{x.FullName}"));
+
+                            Console.WriteLine($"Destination Exists:\n\t{destination.Exists}");
+
+                            Console.WriteLine("Copying content...");
+                            source.CopyContentTo(destination, true);
+
+                            Console.WriteLine($"Destination Exists after copy:\n\t{destination.Exists}");
+                            Console.WriteLine("Destination Children:");
+                            destination.GetFileSystemInfos("*", SearchOption.AllDirectories)
+                                .ToList()
+                                .ForEach(x =&gt; Console.WriteLine($"\t{x.FullName}"));
+
+                            /*
+                            Output:
+                            Source Children:
+                                    C:\Demo\ChildDir1
+                                    C:\Demo\ChildDir2
+                                    C:\Demo\ChildFile1.txt
+                                    C:\Demo\ChildFile2.txt
+                                    C:\Demo\ChildDir2\ChildFile1.txt
+                                    C:\Demo\ChildDir2\ChildFile2.txt
+                            Destination Exists:
+                                    False
+                            Copying content...
+                            Destination Exists after copy:
+                                    True
+                            Destination Children:
+                                    C:\DemoCopy\ChildDir1
+                                    C:\DemoCopy\ChildDir2
+                                    C:\DemoCopy\ChildFile1.txt
+                                    C:\DemoCopy\ChildFile2.txt
+                                    C:\DemoCopy\ChildDir2\ChildFile1.txt
+                                    C:\DemoCopy\ChildDir2\ChildFile2.txt
+                            */
+                        </code>
+                        <code language="powershell">
+                            $source = New-Object System.IO.DirectoryInfo 'C:\Demo'
+                            $destination = New-Object System.IO.DirectoryInfo 'C:\DemoCopy'
+
+                            Write-Host "Source Children:"
+                            $source.GetFileSystemInfos("*", [System.IO.SearchOption]::AllDirectories).FullName |
+                                ForEach-Object { Write-Host "`t$_" }
+
+                            Write-Host "Destination Exists:`n`t$($destination.Exists)"
+
+                            Write-Host "Copying content..."
+                            $source.CopyContentTo($destination, $true)
+
+                            Write-Host "Destination Exists after copy:`n`t$($destination.Exists)"
+                            Write-Host "Destination Children:"
+                            $destination.GetFileSystemInfos("*", [System.IO.SearchOption]::AllDirectories).FullName |
+                                ForEach-Object { Write-Host "`t$_" }
+
+                            &lt;#
+                            Output:
+                            Source Children:
+                                    C:\Demo\ChildDir1
+                                    C:\Demo\ChildDir2
+                                    C:\Demo\ChildFile1.txt
+                                    C:\Demo\ChildFile2.txt
+                                    C:\Demo\ChildDir2\ChildFile1.txt
+                                    C:\Demo\ChildDir2\ChildFile2.txt
+                            Destination Exists:
+                                    False
+                            Copying content...
+                            Destination Exists after copy:
+                                    True
+                            Destination Children:
+                                    C:\DemoCopy\ChildDir1
+                                    C:\DemoCopy\ChildDir2
+                                    C:\DemoCopy\ChildFile1.txt
+                                    C:\DemoCopy\ChildFile2.txt
+                                    C:\DemoCopy\ChildDir2\ChildFile1.txt
+                                    C:\DemoCopy\ChildDir2\ChildFile2.txt
+                            #&gt;
+                        </code>
+                    </example>
+                    <example>
+                        <summary>Copy files and their directory structures and overwrites any pre-existing files.</summary>
+                        <remarks>
+                            <p>
+                                This copies all the files and directories within the source directory to the destination directory but does not
+                                copy empty directories. It will also forcibly overwrite any files that already exist at the destination.
+                            </p>
+                            <dl>
+                                <dt>Notice:</dt>
+                                <dd>- The empty directory <i>ChildDir1</i> is not copied to the destination.</dd>
+                                <dd>- The hashes of <i>DemoCopy\ChildFile1.txt</i> and <i>DemoCopy\ChildFile2.txt</i> now match those from <i>Demo</i> as they were overwritten.</dd>
+                            </dl>
+                        </remarks>
+                        <code language="csharp">
+                            var source = new DirectoryInfo("C:\\Demo");
+                            var destination = new DirectoryInfo("C:\\DemoCopy");
+
+                            Console.WriteLine("Source Children:");
+                            source.GetFileSystemInfos("*", SearchOption.AllDirectories)
+                                .ToList()
+                                .ForEach(x =&gt; Console.WriteLine($"\t{x.FullName}"));
+
+                            Console.WriteLine("Destination Children:");
+                            destination.GetFileSystemInfos("*", SearchOption.AllDirectories)
+                                .ToList()
+                                .ForEach(x =&gt; Console.WriteLine($"\t{x.FullName}"));
+
+                            Console.WriteLine("File Information:");
+                            var files = source.GetFiles().ToList().Concat(destination.GetFiles().ToList()).ToArray();
+                            Console.WriteLine(GetFileTable(files, includeHash: true));
+
+                            Console.WriteLine("Copying content...");
+                            source.CopyContentTo(destination, false, true);
+
+                            Console.WriteLine("Destination Children:");
+                            destination.GetFileSystemInfos("*", SearchOption.AllDirectories)
+                                .ToList()
+                                .ForEach(x =&gt; Console.WriteLine($"\t{x.FullName}"));
+
+                            Console.WriteLine("File Information after copy:");
+                            files = source.GetFiles().ToList().Concat(destination.GetFiles().ToList()).ToArray();
+                            Console.WriteLine(GetFileTable(files, includeHash: true));
+
+                            /*
+                            Output:
+                            Source Children:
+                                C:\Demo\ChildDir1
+                                C:\Demo\ChildDir2
+                                C:\Demo\ChildFile1.txt
+                                C:\Demo\ChildFile2.txt
+                                C:\Demo\ChildDir2\ChildFile1.txt
+                                C:\Demo\ChildDir2\ChildFile2.txt
+                            Destination Children:
+                                C:\DemoCopy\ChildFile1.txt
+                                C:\DemoCopy\ChildFile2.txt
+                                C:\DemoCopy\ChildFile3.txt
+                            File Information:
+                                FullName                   Exists Hash
+                                --------                   ------ ----
+                                C:\Demo\ChildFile1.txt       True AE7C049181E275A7AAF1E365339DBE888309C7BE
+                                C:\Demo\ChildFile2.txt       True 7A403B5B3FA0AA8386DC47AEEC9D03B3EBEB9A6C
+                                C:\DemoCopy\ChildFile1.txt   True BA699672FB60916D72552E903FBB6E7B0C342DD6
+                                C:\DemoCopy\ChildFile2.txt   True D66287A7B4BF2DB698341A97B06C8A8FF52661D7
+                                C:\DemoCopy\ChildFile3.txt   True FDE4898E14ECB550A6CCE74D06423F50DC2E83E1
+                            Copying content...
+                            Destination Children:
+                                C:\DemoCopy\ChildDir2
+                                C:\DemoCopy\ChildFile1.txt
+                                C:\DemoCopy\ChildFile2.txt
+                                C:\DemoCopy\ChildFile3.txt
+                                C:\DemoCopy\ChildDir2\ChildFile1.txt
+                                C:\DemoCopy\ChildDir2\ChildFile2.txt
+                            File Information after copy:
+                                FullName                   Exists Hash
+                                --------                   ------ ----
+                                C:\Demo\ChildFile1.txt       True AE7C049181E275A7AAF1E365339DBE888309C7BE
+                                C:\Demo\ChildFile2.txt       True 7A403B5B3FA0AA8386DC47AEEC9D03B3EBEB9A6C
+                                C:\DemoCopy\ChildFile1.txt   True AE7C049181E275A7AAF1E365339DBE888309C7BE
+                                C:\DemoCopy\ChildFile2.txt   True 7A403B5B3FA0AA8386DC47AEEC9D03B3EBEB9A6C
+                                C:\DemoCopy\ChildFile3.txt   True FDE4898E14ECB550A6CCE74D06423F50DC2E83E1
+                            */
+                        </code>
+                        <code language="powershell">
+                            $source = New-Object System.IO.DirectoryInfo 'C:\Demo'
+                            $destination = New-Object System.IO.DirectoryInfo 'C:\DemoCopy'
+
+                            Write-Host "Source Children:"
+                            $source.GetFileSystemInfos("*", [System.IO.SearchOption]::AllDirectories).FullName |
+                                ForEach-Object { Write-Host "`t$_" }
+
+                            Write-Host "Destination Children:"
+                            $destination.GetFileSystemInfos("*", [System.IO.SearchOption]::AllDirectories).FullName |
+                                ForEach-Object { Write-Host "`t$_" }
+
+                            Write-Host "File Information:"
+                            Get-FileTable -Files ($source.GetFiles() + $destination.GetFiles()) -IncludeHash
+
+                            Write-Host "Copying content..."
+                            $source.CopyContentTo($destination, $false, $true)
+
+                            Write-Host "Destination Children:"
+                            $destination.GetFileSystemInfos("*", [System.IO.SearchOption]::AllDirectories).FullName |
+                                ForEach-Object { Write-Host "`t$_" }
+
+                            Write-Host "File Information after copy:"
+                            Get-FileTable -Files ($source.GetFiles() + $destination.GetFiles()) -IncludeHash
+
+                            &lt;#
+                            Source Children:
+                                C:\Demo\ChildDir1
+                                C:\Demo\ChildDir2
+                                C:\Demo\ChildFile1.txt
+                                C:\Demo\ChildFile2.txt
+                                C:\Demo\ChildDir2\ChildFile1.txt
+                                C:\Demo\ChildDir2\ChildFile2.txt
+                            Destination Children:
+                                C:\DemoCopy\ChildFile1.txt
+                                C:\DemoCopy\ChildFile2.txt
+                                C:\DemoCopy\ChildFile3.txt
+                            File Information:
+                                FullName                   Exists Hash
+                                --------                   ------ ----
+                                C:\Demo\ChildFile1.txt       True 373FEB01CBFDCB5121502AFFD3DB5504DABACC8F
+                                C:\Demo\ChildFile2.txt       True D7BB9BC327821EBD985C30F09F2F5B50B5418C79
+                                C:\DemoCopy\ChildFile1.txt   True 41AC012FA1E8DA02511EEFBA8F5A3B4F0BBE334A
+                                C:\DemoCopy\ChildFile2.txt   True ABB5D4DBD1812F92CF357CA7C0652ED66712232D
+                                C:\DemoCopy\ChildFile3.txt   True 24164ECDA682E2F8ABEB208672D868A1BA3BCC0E
+                            Copying content...
+                            Destination Children:
+                                C:\DemoCopy\ChildDir2
+                                C:\DemoCopy\ChildFile1.txt
+                                C:\DemoCopy\ChildFile2.txt
+                                C:\DemoCopy\ChildFile3.txt
+                                C:\DemoCopy\ChildDir2\ChildFile1.txt
+                                C:\DemoCopy\ChildDir2\ChildFile2.txt
+                            File Information after copy:
+                                FullName                   Exists Hash
+                                --------                   ------ ----
+                                C:\Demo\ChildFile1.txt       True 373FEB01CBFDCB5121502AFFD3DB5504DABACC8F
+                                C:\Demo\ChildFile2.txt       True D7BB9BC327821EBD985C30F09F2F5B50B5418C79
+                                C:\DemoCopy\ChildFile1.txt   True 373FEB01CBFDCB5121502AFFD3DB5504DABACC8F
+                                C:\DemoCopy\ChildFile2.txt   True D7BB9BC327821EBD985C30F09F2F5B50B5418C79
+                                C:\DemoCopy\ChildFile3.txt   True 24164ECDA682E2F8ABEB208672D868A1BA3BCC0E
+                            #&gt;
+                        </code>
+                    </example>
+                    <example>
+                        <summary>Removes all contents of the destination and copies files and their directory structures.</summary>
+                        <remarks>
+                            <p>
+                                This will remove all files and directories from the destination before copying all the files and
+                                directories within the source directory to the destination directory, but does not copy empty directories.
+                            </p>
+                            <dl>
+                                <dt>Notice:</dt>
+                                <dd>- The empty directory <i>ChildDir1</i> is not copied to the destination.</dd>
+                                <dd>- The extraneous file <i>ChildFile3.txt</i> is removed from the destination.</dd>
+                                <dd>- The use of <b>overwrite</b> would be irrelevant here since all files would be removed prior to the copy starting.</dd>
+                            </dl>
+                        </remarks>
+                        <code language="csharp">
+                            var source = new DirectoryInfo("C:\\Demo");
+                            var destination = new DirectoryInfo("C:\\DemoCopy");
+
+                            Console.WriteLine("Source Children:");
+                            source.GetFileSystemInfos("*", SearchOption.AllDirectories)
+                                .ToList()
+                                .ForEach(x =&gt; Console.WriteLine($"\t{x.FullName}"));
+
+                            Console.WriteLine("Destination Children:");
+                            destination.GetFileSystemInfos("*", SearchOption.AllDirectories)
+                                .ToList()
+                                .ForEach(x =&gt; Console.WriteLine($"\t{x.FullName}"));
+
+                            Console.WriteLine("File Information:");
+                            var files = source.GetFiles().ToList().Concat(destination.GetFiles().ToList()).ToArray();
+                            Console.WriteLine(GetFileTable(files, includeHash: true));
+
+                            Console.WriteLine("Copying content...");
+                            source.CopyContentTo(destination, false, false, true);
+
+                            Console.WriteLine("Destination Children:");
+                            destination.GetFileSystemInfos("*", SearchOption.AllDirectories)
+                                .ToList()
+                                .ForEach(x =&gt; Console.WriteLine($"\t{x.FullName}"));
+
+                            Console.WriteLine("File Information after copy:");
+                            files = source.GetFiles().ToList().Concat(destination.GetFiles().ToList()).ToArray();
+                            Console.WriteLine(GetFileTable(files, includeHash: true));
+
+                            /*
+                            Output:
+                            Source Children:
+                                C:\Demo\ChildDir1
+                                C:\Demo\ChildDir2
+                                C:\Demo\ChildFile1.txt
+                                C:\Demo\ChildFile2.txt
+                                C:\Demo\ChildDir2\ChildFile1.txt
+                                C:\Demo\ChildDir2\ChildFile2.txt
+                            Destination Children:
+                                C:\DemoCopy\ChildFile1.txt
+                                C:\DemoCopy\ChildFile2.txt
+                                C:\DemoCopy\ChildFile3.txt
+                            File Information:
+                                FullName                   Exists Hash
+                                --------                   ------ ----
+                                C:\Demo\ChildFile1.txt       True AE7C049181E275A7AAF1E365339DBE888309C7BE
+                                C:\Demo\ChildFile2.txt       True 7A403B5B3FA0AA8386DC47AEEC9D03B3EBEB9A6C
+                                C:\DemoCopy\ChildFile1.txt   True BA699672FB60916D72552E903FBB6E7B0C342DD6
+                                C:\DemoCopy\ChildFile2.txt   True D66287A7B4BF2DB698341A97B06C8A8FF52661D7
+                                C:\DemoCopy\ChildFile3.txt   True FDE4898E14ECB550A6CCE74D06423F50DC2E83E1
+                            Copying content...
+                            Destination Children:
+                                C:\DemoCopy\ChildDir2
+                                C:\DemoCopy\ChildFile1.txt
+                                C:\DemoCopy\ChildFile2.txt
+                                C:\DemoCopy\ChildDir2\ChildFile1.txt
+                                C:\DemoCopy\ChildDir2\ChildFile2.txt
+                            File Information after copy:
+                                FullName                   Exists Hash
+                                --------                   ------ ----
+                                C:\Demo\ChildFile1.txt       True AE7C049181E275A7AAF1E365339DBE888309C7BE
+                                C:\Demo\ChildFile2.txt       True 7A403B5B3FA0AA8386DC47AEEC9D03B3EBEB9A6C
+                                C:\DemoCopy\ChildFile1.txt   True AE7C049181E275A7AAF1E365339DBE888309C7BE
+                                C:\DemoCopy\ChildFile2.txt   True 7A403B5B3FA0AA8386DC47AEEC9D03B3EBEB9A6C
+                            */
+                        </code>
+                        <code language="powershell">
+                            $source = New-Object System.IO.DirectoryInfo 'C:\Demo'
+                            $destination = New-Object System.IO.DirectoryInfo 'C:\DemoCopy'
+
+                            Write-Host "Source Children:"
+                            $source.GetFileSystemInfos("*", [System.IO.SearchOption]::AllDirectories).FullName |
+                                ForEach-Object { Write-Host "`t$_" }
+
+                            Write-Host "Destination Children:"
+                            $destination.GetFileSystemInfos("*", [System.IO.SearchOption]::AllDirectories).FullName |
+                                ForEach-Object { Write-Host "`t$_" }
+
+                            Write-Host "File Information:"
+                            Get-FileTable -Files ($source.GetFiles() + $destination.GetFiles()) -IncludeHash
+
+                            Write-Host "Copying content..."
+                            $source.CopyContentTo($destination, $false, $false, $true)
+
+                            Write-Host "Destination Children:"
+                            $destination.GetFileSystemInfos("*", [System.IO.SearchOption]::AllDirectories).FullName |
+                                ForEach-Object { Write-Host "`t$_" }
+
+                            Write-Host "File Information after copy:"
+                            Get-FileTable -Files ($source.GetFiles() + $destination.GetFiles()) -IncludeHash
+
+                            Remove-DemoDirectory -RootPath 'C:\Demo'
+                            Remove-DemoDirectory -RootPath 'C:\DemoCopy'
+
+                            &lt;#
+                            Source Children:
+                                C:\Demo\ChildDir1
+                                C:\Demo\ChildDir2
+                                C:\Demo\ChildFile1.txt
+                                C:\Demo\ChildFile2.txt
+                                C:\Demo\ChildDir2\ChildFile1.txt
+                                C:\Demo\ChildDir2\ChildFile2.txt
+                            Destination Children:
+                                C:\DemoCopy\ChildFile1.txt
+                                C:\DemoCopy\ChildFile2.txt
+                                C:\DemoCopy\ChildFile3.txt
+                            File Information:
+                                FullName                   Exists Hash
+                                --------                   ------ ----
+                                C:\Demo\ChildFile1.txt       True 373FEB01CBFDCB5121502AFFD3DB5504DABACC8F
+                                C:\Demo\ChildFile2.txt       True D7BB9BC327821EBD985C30F09F2F5B50B5418C79
+                                C:\DemoCopy\ChildFile1.txt   True 41AC012FA1E8DA02511EEFBA8F5A3B4F0BBE334A
+                                C:\DemoCopy\ChildFile2.txt   True ABB5D4DBD1812F92CF357CA7C0652ED66712232D
+                                C:\DemoCopy\ChildFile3.txt   True 24164ECDA682E2F8ABEB208672D868A1BA3BCC0E
+                            Copying content...
+                            Destination Children:
+                                C:\DemoCopy\ChildDir2
+                                C:\DemoCopy\ChildFile1.txt
+                                C:\DemoCopy\ChildFile2.txt
+                                C:\DemoCopy\ChildDir2\ChildFile1.txt
+                                C:\DemoCopy\ChildDir2\ChildFile2.txt
+                            File Information after copy:
+                                FullName                   Exists Hash
+                                --------                   ------ ----
+                                C:\Demo\ChildFile1.txt       True 373FEB01CBFDCB5121502AFFD3DB5504DABACC8F
+                                C:\Demo\ChildFile2.txt       True D7BB9BC327821EBD985C30F09F2F5B50B5418C79
+                                C:\DemoCopy\ChildFile1.txt   True 373FEB01CBFDCB5121502AFFD3DB5504DABACC8F
+                                C:\DemoCopy\ChildFile2.txt   True D7BB9BC327821EBD985C30F09F2F5B50B5418C79
+                            #&gt;
+                        </code>
+                    </example>
+                    <example>
+                        <summary>Copy the contents to the target with conflicting items while not overwritting or cleaning the target.</summary>
+                        <remarks>
+                            <p>
+                                Throws an exception because the destination directory already contains a file with the same
+                                name as one of the source files and both <b>overwrite</b> and <b>cleanTarget</b> are set to <i>false</i>.
+                            </p>
+                        </remarks>
+                        <code language="csharp">
+                            var source = new DirectoryInfo("C:\\Demo");
+                            var destination = new DirectoryInfo("C:\\DemoCopy");
+
+                            Console.WriteLine("Source Children:");
+                            source.GetFileSystemInfos("*", SearchOption.AllDirectories)
+                                .ToList()
+                                .ForEach(x =&gt; Console.WriteLine($"\t{x.FullName}"));
+
+                            Console.WriteLine("Destination Children:");
+                            destination.GetFileSystemInfos("*", SearchOption.AllDirectories)
+                                .ToList()
+                                .ForEach(x =&gt; Console.WriteLine($"\t{x.FullName}"));
+
+                            Console.WriteLine("Copying content...");
+                            try
+                            {
+                                source.CopyContentTo(destination, false, false);
+                            }
+                            catch (Exception ex)
+                            {
+                                var stringArgs = new[] {
+                                    ex.GetType().ToString(),
+                                    ex.Message,
+                                    ex.StackTrace.Substring(0, ex.StackTrace.IndexOf(Environment.NewLine))
+                                };
+
+                                Console.Error.WriteLine(string.Format("\nError: {0}: {1}\n{2}\n", stringArgs));
+                            }
+
+                            /*
+                            Output:
+                            Source Children:
+                                C:\Demo\ChildDir1
+                                C:\Demo\ChildDir2
+                                C:\Demo\ChildFile1.txt
+                                C:\Demo\ChildFile2.txt
+                                C:\Demo\ChildDir2\ChildFile1.txt
+                                C:\Demo\ChildDir2\ChildFile2.txt
+                            Destination Children:
+                                C:\DemoCopy\ChildFile1.txt
+                                C:\DemoCopy\ChildFile2.txt
+                                C:\DemoCopy\ChildFile3.txt
+                            Copying content...
+
+                            Error: System.IO.IOException: The file 'C:\DemoCopy\ChildFile1.txt' already exists.
+                                at System.IO.FileSystem.CopyFile(String sourceFullPath, String destFullPath, Boolean overwrite)
+                            */
+                        </code>
+                        <code language="powershell">
+                            $source = New-Object System.IO.DirectoryInfo 'C:\Demo'
+                            $destination = New-Object System.IO.DirectoryInfo 'C:\DemoCopy'
+
+                            Write-Host "Source Children:"
+                            $source.GetFileSystemInfos("*", [System.IO.SearchOption]::AllDirectories).FullName |
+                                ForEach-Object { Write-Host "`t$_" }
+
+                            Write-Host "Destination Children:"
+                            $destination.GetFileSystemInfos("*", [System.IO.SearchOption]::AllDirectories).FullName |
+                                ForEach-Object { Write-Host "`t$_" }
+
+                            Write-Host "Copying content..."
+
+                            try
+                            {
+                                $source.CopyContentTo($destination, $false, $false)
+                            }
+                            catch
+                            {
+                                $stringArgs = @(
+                                    $_.Exception.GetType().ToString(),
+                                    $_.Exception.Message,
+                                    $_.Exception.StackTrace.Substring(0, $_.Exception.StackTrace.IndexOf([Environment]::NewLine))
+                                )
+
+                                Write-Host ("`nError: {0}: {1}`n{2}`n" -f $stringArgs)
+                                $error.Clear()
+                            }
+
+                            &lt;#
+                            Source Children:
+                                C:\Demo\ChildDir1
+                                C:\Demo\ChildDir2
+                                C:\Demo\ChildFile1.txt
+                                C:\Demo\ChildFile2.txt
+                                C:\Demo\ChildDir2\ChildFile1.txt
+                                C:\Demo\ChildDir2\ChildFile2.txt
+                            Destination Children:
+                                C:\DemoCopy\ChildFile1.txt
+                                C:\DemoCopy\ChildFile2.txt
+                                C:\DemoCopy\ChildFile3.txt
+                            Copying content...
+
+                            Error: System.IO.IOException: The file 'C:\DemoCopy\ChildFile1.txt' already exists.
+                                at System.IO.FileSystem.CopyFile(String sourceFullPath, String destFullPath, Boolean overwrite)
+                            #&gt;
+                        </code>
+                    </example>
+                </Member>
+            </Members>
+        </DirectoryInfoExtensions>
+        <FileInfoExtensions>
+            <Class>
+                <summary>Extension methods for the <c>System.IO.FileInfo</c> class.</summary>
+            </Class>
+            <Members>
+                <Member name="MoveFrom">
+                    <summary>Moves the <b>source</b> file to the calling <c>FileInfo</c>'s location.</summary>
+                    <remarks>
+                        <p>
+                            Moves the <b>source</b> file to the calling destination. If the destination exists and
+                            <b>overwrite</b> is <i>false</i>, an exception will be thrown.
+                        </p>
+                        <p>
+                            <c>System.IO.FileInfo</c> has a <b>MoveTo</b> method, but it changes the source
+                            <c>FileInfo</c> object information to reference the destination file. <b>MoveFrom</b>
+                            will allow you to call the move from the destination, leaving the source object still
+                            referencing where the file was.
+                        </p>
+                    </remarks>
+                    <param name="destination">The calling <c>FileInfo</c> object.</param>
+                    <param name="source">The source <c>FileInfo</c> object to be moved.</param>
+                    <param name="overwrite">Indicates if the destination file should be overwritten if it exists.</param>
+                    <returns>N/A</returns>
+                    <exception cref="FileNotFoundException">If the source file does not exist.</exception>
+                    <exception cref="IOException">If the destination file exists but <b>overwrite</b> is not set to <i>true</i>.</exception>
+                    <example>
+                        <summary>Moves and renames a file.</summary>
+                        <remarks>
+                            <p>
+                                The directory structure is created and the file is moved from the source file without changing the properties of the source <c>FileInfo</c> object.
+                            </p>
+                            <dl>
+                                <dt>Notice:</dt>
+                                <dd>- The directory structure was created.</dd>
+                                <dd>- The source file <i>ChildFile1.txt</i> is moved to the destination directory <i>ChildDir3</i> and renamed to <i>ChildFile3.txt</i>.</dd>
+                                <dd>- The source <c>FileInfo</c> object is still referencing <i>ChildFile1.txt</i> and is updated to reflect the non-existing file.</dd>
+                            </dl>
+                        </remarks>
+                        <code language="csharp">
+                            var sourceFile = new FileInfo("C:\\Demo\\ChildFile1.txt");
+                            var destinationFile = new FileInfo("C:\\DemoCopy\\ChildDir3\\ChildFile3.txt");
+
+                            Console.WriteLine("File Information:");
+                            Console.WriteLine(GetFileTable(new[] { sourceFile, destinationFile }, includeDirectory: true));
+
+                            Console.WriteLine("Moving file...");
+                            destinationFile.MoveFrom(sourceFile);
+
+                            Console.WriteLine("File Information after move:");
+                            Console.WriteLine(GetFileTable(new[] { sourceFile, destinationFile }, includeDirectory: true));
+
+                            /*
+                            File Information:
+                                    Directory             Name           DirectoryExists Exists
+                                    ---------             ----           --------------- ------
+                                    C:\Demo               ChildFile1.txt            True   True
+                                    C:\DemoCopy\ChildDir3 ChildFile3.txt           False  False
+                            Moving file...
+                            File Information after move:
+                                    Directory             Name           DirectoryExists Exists
+                                    ---------             ----           --------------- ------
+                                    C:\Demo               ChildFile1.txt            True  False
+                                    C:\DemoCopy\ChildDir3 ChildFile3.txt            True   True
+                            */
+                        </code>
+                        <code language="powershell">
+                            $sourceFile = New-Object System.IO.FileInfo 'C:\Demo\ChildFile1.txt'
+                            $destinationFile = New-Object System.IO.FileInfo 'C:\DemoCopy\ChildDir3\ChildFile3.txt'
+
+                            Write-Host "File Information:"
+                            Write-Host (Get-FileTable -Files $sourceFile, $destinationFile -IncludeDirectory)
+
+                            Write-Host "Moving file..."
+                            $destinationFile.MoveFrom($sourceFile)
+
+                            Write-Host "File Information after move:"
+                            Write-Host (Get-FileTable -Files $sourceFile, $destinationFile -IncludeDirectory)
+
+                            &lt;#
+                            Output:
+                            File Information:
+                                    Directory             Name           DirectoryExists Exists
+                                    ---------             ----           --------------- ------
+                                    C:\Demo               ChildFile1.txt            True   True
+                                    C:\DemoCopy\ChildDir3 ChildFile3.txt           False  False
+                            Moving file...
+                            File Information after move:
+                                    Directory             Name           DirectoryExists Exists
+                                    ---------             ----           --------------- ------
+                                    C:\Demo               ChildFile1.txt            True  False
+                                    C:\DemoCopy\ChildDir3 ChildFile3.txt            True   True
+                            #&gt;
+                        </code>
+                    </example>
+                    <example>
+                        <summary>Moves and overwrites a file.</summary>
+                        <remarks>
+                            <p>The pre-existing destination file is overwritten by the source file.</p>
+                            <dl>
+                                <dt>Notice:</dt>
+                                <dd>- The source file <i>ChildFile1.txt</i> is moved to the destination directory <i>ChildDir3</i> and renamed to <i>ChildFile3.txt</i>.</dd>
+                                <dd>- The source <c>FileInfo</c> object is still referencing <i>ChildFile1.txt</i> and is updated to reflect the non-existing file.</dd>
+                                <dd>- The destination file <i>ChildFile3.txt</i> is overwritten with the source file <i>ChildFile1.txt</i>.</dd>
+                            </dl>
+                        </remarks>
+                        <code language="csharp">
+                            var sourceFile = new FileInfo("C:\\Demo\\ChildFile1.txt");
+                            var destinationFile = new FileInfo("C:\\DemoCopy\\ChildDir3\\ChildFile3.txt");
+
+                            Console.WriteLine("File Information:");
+                            Console.WriteLine(GetFileTable(new[] { sourceFile, destinationFile }, includeDirectory: true, includeHash: true));
+
+                            Console.WriteLine("Moving file...");
+                            destinationFile.MoveFrom(sourceFile, true);
+
+                            Console.WriteLine("File Information after move:");
+                            Console.WriteLine(GetFileTable(new[] { sourceFile, destinationFile }, includeDirectory: true, includeHash: true));
+                            /*
+                            Output:
+                            File Information:
+                                    Directory             Name           DirectoryExists Exists Hash
+                                    ---------             ----           --------------- ------ ----
+                                    C:\Demo               ChildFile1.txt            True   True AE7C049181E275A7AAF1E365339DBE888309C7BE
+                                    C:\DemoCopy\ChildDir3 ChildFile3.txt            True   True 6633A8AA22899FBB94984085B76796D33A890836
+                            Moving file...
+                            File Information after move:
+                                    Directory             Name           DirectoryExists Exists Hash
+                                    ---------             ----           --------------- ------ ----
+                                    C:\Demo               ChildFile1.txt            True  False
+                                    C:\DemoCopy\ChildDir3 ChildFile3.txt            True   True AE7C049181E275A7AAF1E365339DBE888309C7BE
+                            */
+                        </code>
+                        <code language="powershell">
+                            $sourceFile = New-Object System.IO.FileInfo 'C:\Demo\ChildFile1.txt'
+                            $destinationFile = New-Object System.IO.FileInfo 'C:\DemoCopy\ChildDir3\ChildFile3.txt'
+
+                            Write-Host "File Information:"
+                            Write-Host (Get-FileTable -Files $sourceFile, $destinationFile -IncludeDirectory -IncludeHash)
+
+                            Write-Host "Moving file..."
+                            $destinationFile.MoveFrom($sourceFile, $true)
+
+                            Write-Host "File Information after move:"
+                            Write-Host (Get-FileTable -Files $sourceFile, $destinationFile -IncludeDirectory -IncludeHash)
+
+                            &lt;#
+                            Output:
+                            File Information:
+                                    Directory             Name           DirectoryExists Exists Hash
+                                    ---------             ----           --------------- ------ ----
+                                    C:\Demo               ChildFile1.txt            True   True 373FEB01CBFDCB5121502AFFD3DB5504DABACC8F
+                                    C:\DemoCopy\ChildDir3 ChildFile3.txt            True   True 456012073991C95AF2F3628D2C28595A85E80653
+                            Moving file...
+                            File Information after move:
+                                    Directory             Name           DirectoryExists Exists Hash
+                                    ---------             ----           --------------- ------ ----
+                                    C:\Demo               ChildFile1.txt            True  False
+                                    C:\DemoCopy\ChildDir3 ChildFile3.txt            True   True 373FEB01CBFDCB5121502AFFD3DB5504DABACC8F
+                            #&gt;
+                        </code>
+                    </example>
+                    <example>
+                        <summary>Throws an error because the destination already exists.</summary>
+                        <remarks>
+                            <p>The pre-existing destination file is not overwritten by the source file and an error is thrown.</p>
+                            <dl>
+                                <dt>Notice:</dt>
+                                <dd>- The destination file <i>ChildFile3.txt</i> still has original hash value.</dd>
+                            </dl>
+                        </remarks>
+                        <code language="csharp">
+                            var sourceFile = new FileInfo("C:\\Demo\\ChildFile1.txt");
+                            var destinationFile = new FileInfo("C:\\DemoCopy\\ChildDir3\\ChildFile3.txt");
+
+                            Console.WriteLine("File Information:");
+                            Console.WriteLine(GetFileTable(new[] { sourceFile, destinationFile }, includeDirectory: true, includeHash: true));
+
+                            Console.WriteLine("Moving file...");
+                            try
+                            {
+                                destinationFile.MoveFrom(sourceFile);
+                            }
+                            catch (Exception ex)
+                            {
+                                var stringArgs = new[] {
+                                    ex.GetType().ToString(),
+                                    ex.Message,
+                                    ex.StackTrace.Substring(0, ex.StackTrace.IndexOf(Environment.NewLine))
+                                };
+
+                                Console.Error.WriteLine(string.Format("\nError: {0}: {1}\n{2}\n", stringArgs));
+                            }
+
+                            Console.WriteLine("File Information after move:");
+                            Console.WriteLine(GetFileTable(new[] { sourceFile, destinationFile }, includeDirectory: true, includeHash: true));
+
+                            /*
+                            Output:
+                            File Information:
+                                    Directory             Name           DirectoryExists Exists Hash
+                                    ---------             ----           --------------- ------ ----
+                                    C:\Demo               ChildFile1.txt            True   True AE7C049181E275A7AAF1E365339DBE888309C7BE
+                                    C:\DemoCopy\ChildDir3 ChildFile3.txt            True   True 6633A8AA22899FBB94984085B76796D33A890836
+                            Moving file...
+
+                            Error: System.IO.IOException: The destination file 'C:\DemoCopy\ChildDir3\ChildFile3.txt' already exists and overwrite is not set to true.
+                               at IOInfoExtensions.FileInfoExtensions.MoveFrom(FileInfo destination, FileInfo source, Boolean overwrite)
+
+                            File Information after move:
+                                    Directory             Name           DirectoryExists Exists Hash
+                                    ---------             ----           --------------- ------ ----
+                                    C:\Demo               ChildFile1.txt            True   True AE7C049181E275A7AAF1E365339DBE888309C7BE
+                                    C:\DemoCopy\ChildDir3 ChildFile3.txt            True   True 6633A8AA22899FBB94984085B76796D33A890836
+                            */
+                        </code>
+                        <code language="powershell">
+                            $sourceFile = New-Object System.IO.FileInfo 'C:\Demo\ChildFile1.txt'
+                            $destinationFile = New-Object System.IO.FileInfo 'C:\DemoCopy\ChildDir3\ChildFile3.txt'
+
+                            Write-Host "File Information:"
+                            Write-Host (Get-FileTable -Files $sourceFile, $destinationFile -IncludeDirectory -IncludeHash)
+
+                            Write-Host "Moving file..."
+
+                            try
+                            {
+                                $destinationFile.MoveFrom($sourceFile)
+                            }
+                            catch
+                            {
+                                $stringArgs = @(
+                                    $_.Exception.GetType().ToString(),
+                                    $_.Exception.Message,
+                                    $_.Exception.StackTrace.Substring(0, $_.Exception.StackTrace.IndexOf([Environment]::NewLine))
+                                )
+
+                                Write-Host ("`nError: {0}: {1}`n{2}`n" -f $stringArgs)
+                                $error.Clear()
+                            }
+
+                            Write-Host "File Information after move:"
+                            Write-Host (Get-FileTable -Files $sourceFile, $destinationFile -IncludeDirectory -IncludeHash)
+
+                            &lt;#
+                            Output:
+                            File Information:
+                                    Directory             Name           DirectoryExists Exists Hash
+                                    ---------             ----           --------------- ------ ----
+                                    C:\Demo               ChildFile1.txt            True   True 373FEB01CBFDCB5121502AFFD3DB5504DABACC8F
+                                    C:\DemoCopy\ChildDir3 ChildFile3.txt            True   True 456012073991C95AF2F3628D2C28595A85E80653
+                            Moving file...
+
+                            Error: System.IO.IOException: The destination file 'C:\DemoCopy\ChildDir3\ChildFile3.txt' already exists and overwrite is not set to true.
+                                at IOInfoExtensions.FileInfoExtensions.MoveFrom(FileInfo destination, FileInfo source, Boolean overwrite)
+
+                            File Information after move:
+                                    Directory             Name           DirectoryExists Exists Hash
+                                    ---------             ----           --------------- ------ ----
+                                    C:\Demo               ChildFile1.txt            True   True 373FEB01CBFDCB5121502AFFD3DB5504DABACC8F
+                                    C:\DemoCopy\ChildDir3 ChildFile3.txt            True   True 456012073991C95AF2F3628D2C28595A85E80653
+                            #&gt;
+                        </code>
+                    </example>
+                </Member>
+                <Member name="CopyFrom">
+                    <summary>Copies the designated file to the calling <c>FileInfo</c>'s location.</summary>
+                    <remarks>
+                        <p>
+                            Copies the source file to the calling destination. If the destination exists and
+                            <b>overwrite</b> is <i>false</i>, an exception will be thrown.
+                        </p>
+                        <p>
+                            <c>System.IO.FileInfo</c> has a <b>CopyTo</b> method, but it changes the source <c>FileInfo</c> object
+                            information to match the destination <c>FileInfo</c> properties. <b>CopyFrom</b> will allow
+                            you to call the copy from the destination, leaving the source object still referencing the source file.
+                        </p>
+                    </remarks>
+                    <param name="destination">The calling <c>FileInfo</c> object.</param>
+                    <param name="source">The source <c>FileInfo</c> object to be copied.</param>
+                    <param name="overwrite">Indicates if the destination file should be overwritten if it exists.</param>
+                    <returns>N/A</returns>
+                    <exception cref="FileNotFoundException">If the source file does not exist.</exception>
+                    <exception cref="IOException">If the destination file exists but <b>overwrite</b> is not set to <i>true</i>.</exception>
+                    <example>
+                        <summary>Copies and renames a file.</summary>
+                        <remarks>
+                            <p>
+                                The directory structure is created and the file is copied from the source file without changing the properties of the source <c>FileInfo</c> object.
+                            </p>
+                            <dl>
+                                <dt>Notice:</dt>
+                                <dd>- The directory structure was created.</dd>
+                                <dd>- The source file <i>ChildFile1.txt</i> is copied to the destination directory <i>ChildDir3</i> and renamed to <i>ChildFile3.txt</i>.</dd>
+                                <dd>- The source <c>FileInfo</c> object is still referencing <i>ChildFile1.txt</i>.</dd>
+                            </dl>
+                        </remarks>
+                        <code language="csharp">
+                            var sourceFile = new FileInfo("C:\\Demo\\ChildFile1.txt");
+                            var destinationFile = new FileInfo("C:\\DemoCopy\\ChildDir3\\ChildFile3.txt");
+
+                            Console.WriteLine("File Information:");
+                            Console.WriteLine(GetFileTable(new[] { sourceFile, destinationFile }, includeDirectory: true));
+
+                            Console.WriteLine("Copying file...");
+                            destinationFile.CopyFrom(sourceFile);
+
+                            Console.WriteLine("File Information after copy:");
+                            Console.WriteLine(GetFileTable(new[] { sourceFile, destinationFile }, includeDirectory: true));
+
+                            /*
+                            File Information:
+                                    Directory             Name           DirectoryExists Exists
+                                    ---------             ----           --------------- ------
+                                    C:\Demo               ChildFile1.txt            True   True
+                                    C:\DemoCopy\ChildDir3 ChildFile3.txt           False  False
+                            Copying file...
+                            File Information after copy:
+                                    Directory             Name           DirectoryExists Exists
+                                    ---------             ----           --------------- ------
+                                    C:\Demo               ChildFile1.txt            True   True
+                                    C:\DemoCopy\ChildDir3 ChildFile3.txt            True   True
+                            */
+                        </code>
+                        <code language="powershell">
+                            $sourceFile = New-Object System.IO.FileInfo 'C:\Demo\ChildFile1.txt'
+                            $destinationFile = New-Object System.IO.FileInfo 'C:\DemoCopy\ChildDir3\ChildFile3.txt'
+
+                            Write-Host "File Information:"
+                            Write-Host (Get-FileTable -Files $sourceFile, $destinationFile -IncludeDirectory)
+
+                            Write-Host "Copying file..."
+                            $destinationFile.CopyFrom($sourceFile)
+
+                            Write-Host "File Information after copy:"
+                            Write-Host (Get-FileTable -Files $sourceFile, $destinationFile -IncludeDirectory)
+
+                            &lt;#
+                            Output:
+                            File Information:
+                                    Directory             Name           DirectoryExists Exists
+                                    ---------             ----           --------------- ------
+                                    C:\Demo               ChildFile1.txt            True   True
+                                    C:\DemoCopy\ChildDir3 ChildFile3.txt           False  False
+                            Copying file...
+                            File Information after copy:
+                                    Directory             Name           DirectoryExists Exists
+                                    ---------             ----           --------------- ------
+                                    C:\Demo               ChildFile1.txt            True   True
+                                    C:\DemoCopy\ChildDir3 ChildFile3.txt            True   True
+                            #&gt;
+                        </code>
+                    </example>
+                    <example>
+                        <summary>Copies and overwrites a file.</summary>
+                        <remarks>
+                            <p>The pre-existing destination file is overwritten by the source file.</p>
+                            <dl>
+                                <dt>Notice:</dt>
+                                <dd>- The source file <i>ChildFile1.txt</i> is copied to the destination directory <i>ChildDir3</i> and renamed to <i>ChildFile3.txt</i>.</dd>
+                                <dd>- The source <c>FileInfo</c> object is still referencing <i>ChildFile1.txt</i>.</dd>
+                                <dd>- The destination file <i>ChildFile3.txt</i> is overwritten with the source file <i>ChildFile1.txt</i>.</dd>
+                            </dl>
+                        </remarks>
+                        <code language="csharp">
+                            var sourceFile = new FileInfo("C:\\Demo\\ChildFile1.txt");
+                            var destinationFile = new FileInfo("C:\\DemoCopy\\ChildDir3\\ChildFile3.txt");
+
+                            Console.WriteLine("File Information:");
+                            Console.WriteLine(GetFileTable(new[] { sourceFile, destinationFile }, includeDirectory: true, includeHash: true));
+
+                            Console.WriteLine("Copying file...");
+                            destinationFile.CopyFrom(sourceFile, true);
+
+                            Console.WriteLine("File Information after copy:");
+                            Console.WriteLine(GetFileTable(new[] { sourceFile, destinationFile }, includeDirectory: true, includeHash: true));
+                            /*
+
+                            Output:
+                            File Information:
+                                    Directory             Name           DirectoryExists Exists Hash
+                                    ---------             ----           --------------- ------ ----
+                                    C:\Demo               ChildFile1.txt            True   True AE7C049181E275A7AAF1E365339DBE888309C7BE
+                                    C:\DemoCopy\ChildDir3 ChildFile3.txt            True   True 6633A8AA22899FBB94984085B76796D33A890836
+                            Copying file...
+                            File Information after copy:
+                                    Directory             Name           DirectoryExists Exists Hash
+                                    ---------             ----           --------------- ------ ----
+                                    C:\Demo               ChildFile1.txt            True   True AE7C049181E275A7AAF1E365339DBE888309C7BE
+                                    C:\DemoCopy\ChildDir3 ChildFile3.txt            True   True AE7C049181E275A7AAF1E365339DBE888309C7BE
+                            */
+                        </code>
+                        <code language="powershell">
+                            $sourceFile = New-Object System.IO.FileInfo 'C:\Demo\ChildFile1.txt'
+                            $destinationFile = New-Object System.IO.FileInfo 'C:\DemoCopy\ChildDir3\ChildFile3.txt'
+
+                            Write-Host "File Information:"
+                            Write-Host (Get-FileTable -Files $sourceFile, $destinationFile -IncludeDirectory -IncludeHash)
+
+                            Write-Host "Copying file..."
+                            $destinationFile.CopyFrom($sourceFile, $true)
+
+                            Write-Host "File Information after copy:"
+                            Write-Host (Get-FileTable -Files $sourceFile, $destinationFile -IncludeDirectory -IncludeHash)
+
+                            &lt;#
+                            Output:
+                            File Information:
+                                    Directory             Name           DirectoryExists Exists Hash
+                                    ---------             ----           --------------- ------ ----
+                                    C:\Demo               ChildFile1.txt            True   True 373FEB01CBFDCB5121502AFFD3DB5504DABACC8F
+                                    C:\DemoCopy\ChildDir3 ChildFile3.txt            True   True 456012073991C95AF2F3628D2C28595A85E80653
+                            Copying file...
+                            File Information after copy:
+                                    Directory             Name           DirectoryExists Exists Hash
+                                    ---------             ----           --------------- ------ ----
+                                    C:\Demo               ChildFile1.txt            True   True 373FEB01CBFDCB5121502AFFD3DB5504DABACC8F
+                                    C:\DemoCopy\ChildDir3 ChildFile3.txt            True   True 373FEB01CBFDCB5121502AFFD3DB5504DABACC8F
+                            #&gt;
+                        </code>
+                    </example>
+                    <example>
+                        <summary>Throws an error because the destination already exists.</summary>
+                        <remarks>
+                            <p>The pre-existing destination file is not overwritten by the source file and an error is thrown.</p>
+                            <dl>
+                                <dt>Notice:</dt>
+                                <dd>- The destination file <i>ChildFile3.txt</i> still has original hash value.</dd>
+                            </dl>
+                        </remarks>
+                        <code language="csharp">
+                            var sourceFile = new FileInfo("C:\\Demo\\ChildFile1.txt");
+                            var destinationFile = new FileInfo("C:\\DemoCopy\\ChildDir3\\ChildFile3.txt");
+
+                            Console.WriteLine("File Information:");
+                            Console.WriteLine(GetFileTable(new[] { sourceFile, destinationFile }, includeDirectory: true, includeHash: true));
+
+                            Console.WriteLine("Copying file...");
+                            try
+                            {
+                                destinationFile.CopyFrom(sourceFile);
+                            }
+                            catch (Exception ex)
+                            {
+                                var stringArgs = new[] {
+                                    ex.GetType().ToString(),
+                                    ex.Message,
+                                    ex.StackTrace.Substring(0, ex.StackTrace.IndexOf(Environment.NewLine))
+                                };
+
+                                Console.Error.WriteLine(string.Format("\nError: {0}: {1}\n{2}\n", stringArgs));
+                            }
+
+                            Console.WriteLine("File Information after copy:");
+                            Console.WriteLine(GetFileTable(new[] { sourceFile, destinationFile }, includeDirectory: true, includeHash: true));
+
+                            /*
+                            Output:
+                            File Information:
+                                    Directory             Name           DirectoryExists Exists Hash
+                                    ---------             ----           --------------- ------ ----
+                                    C:\Demo               ChildFile1.txt            True   True AE7C049181E275A7AAF1E365339DBE888309C7BE
+                                    C:\DemoCopy\ChildDir3 ChildFile3.txt            True   True 6633A8AA22899FBB94984085B76796D33A890836
+                            Coyping file...
+
+                            Error: System.IO.IOException: The file 'C:\DemoCopy\ChildDir3\ChildFile3.txt' already exists.
+                               at System.IO.FileSystem.CopyFile(String sourceFullPath, String destFullPath, Boolean overwrite)
+
+                            File Information after copy:
+                                    Directory             Name           DirectoryExists Exists Hash
+                                    ---------             ----           --------------- ------ ----
+                                    C:\Demo               ChildFile1.txt            True   True AE7C049181E275A7AAF1E365339DBE888309C7BE
+                                    C:\DemoCopy\ChildDir3 ChildFile3.txt            True   True 6633A8AA22899FBB94984085B76796D33A890836
+                            */
+                        </code>
+                        <code language="powershell">
+                            $sourceFile = New-Object System.IO.FileInfo 'C:\Demo\ChildFile1.txt'
+                            $destinationFile = New-Object System.IO.FileInfo 'C:\DemoCopy\ChildDir3\ChildFile3.txt'
+
+                            Write-Host "File Information:"
+                            Write-Host (Get-FileTable -Files $sourceFile, $destinationFile -IncludeDirectory -IncludeHash)
+
+                            Write-Host "Copying file..."
+
+                            try
+                            {
+                                $destinationFile.CopyFrom($sourceFile)
+                            }
+                            catch
+                            {
+                                $stringArgs = @(
+                                    $_.Exception.GetType().ToString(),
+                                    $_.Exception.Message,
+                                    $_.Exception.StackTrace.Substring(0, $_.Exception.StackTrace.IndexOf([Environment]::NewLine))
+                                )
+
+                                Write-Host ("`nError: {0}: {1}`n{2}`n" -f $stringArgs)
+                                $error.Clear()
+                            }
+
+                            Write-Host "File Information after copy:"
+                            Write-Host (Get-FileTable -Files $sourceFile, $destinationFile -IncludeDirectory -IncludeHash)
+
+                            &lt;#
+                            Output:
+                            File Information:
+                                    Directory             Name           DirectoryExists Exists Hash
+                                    ---------             ----           --------------- ------ ----
+                                    C:\Demo               ChildFile1.txt            True   True 373FEB01CBFDCB5121502AFFD3DB5504DABACC8F
+                                    C:\DemoCopy\ChildDir3 ChildFile3.txt            True   True 456012073991C95AF2F3628D2C28595A85E80653
+                            Copying file...
+
+                            Error: System.IO.IOException: The file 'C:\DemoCopy\ChildDir3\ChildFile3.txt' already exists.
+                                at System.IO.FileSystem.CopyFile(String sourceFullPath, String destFullPath, Boolean overwrite)
+
+                            File Information after copy:
+                                    Directory             Name           DirectoryExists Exists Hash
+                                    ---------             ----           --------------- ------ ----
+                                    C:\Demo               ChildFile1.txt            True   True 373FEB01CBFDCB5121502AFFD3DB5504DABACC8F
+                                    C:\DemoCopy\ChildDir3 ChildFile3.txt            True   True 456012073991C95AF2F3628D2C28595A85E80653
+                            #&gt;
+                        </code>
+                    </example>
+                </Member>
+                <Member name="TryDelete">
+                    <summary>Deletes the file if it exists.</summary>
+                    <remarks>
+                        <p>Attempts to delete the file. If the file or it's parent directory do not exist, no exception is thrown.</p>
+                        <p><c>System.IO.FileInfo</c> has a <b>Delete</b> method, but it throws an exception if the parent directory does not exist.</p>
+                    </remarks>
+                    <param name="file">The <c>FileInfo</c> object to be deleted.</param>
+                    <returns>N/A</returns>
+                    <example>
+                        <summary>Called on an existing file.</summary>
+                        <remarks>
+                            <p>
+                                The file is deleted and the <c>FileInfo</c> object is refreshed.
+                            </p>
+                            <dl>
+                                <dt>Notice:</dt>
+                                <dd>- Using the <b>Delete</b> method, the final <b>Exists</b> call would have returned <i>true</i> until a <b>Refresh()</b> is called.</dd>
+                            </dl>
+                        </remarks>
+                        <code language="csharp">
+                            var file = new FileInfo("C:\\Demo\\ChildFile1.txt");
+
+                            Console.WriteLine("File Information:");
+                            Console.WriteLine(GetFileTable(new[] { file }, includeDirectory: true));
+
+                            Console.WriteLine("Deleting file...");
+                            file.TryDelete();
+
+                            Console.WriteLine("File Information after delete:");
+                            Console.WriteLine(GetFileTable(new[] { file }, includeDirectory: true));
+
+                            /*
+                            File Information:
+                                    Directory Name           DirectoryExists Exists
+                                    --------- ----           --------------- ------
+                                    C:\Demo   ChildFile1.txt            True   True
+                            Deleting file...
+                            File Information after delete:
+                                    Directory Name           DirectoryExists Exists
+                                    --------- ----           --------------- ------
+                                    C:\Demo   ChildFile1.txt            True  False
+                            */
+                        </code>
+                        <code language="powershell">
+                            $file = New-Object System.IO.FileInfo 'C:\Demo\ChildFile1.txt'
+
+                            Write-Host "File Information:"
+                            Write-Host (Get-FileTable -Files $file -IncludeDirectory)
+
+                            Write-Host "Deleting file..."
+                            $file.TryDelete()
+
+                            Write-Host "File Information after delete:"
+                            Write-Host (Get-FileTable -Files $file -IncludeDirectory)
+
+                            &lt;#
+                            Output:
+                            File Information:
+                                    Directory Name           DirectoryExists Exists
+                                    --------- ----           --------------- ------
+                                    C:\Demo   ChildFile1.txt            True   True
+                            Deleting file...
+                            File Information after delete:
+                                    Directory Name           DirectoryExists Exists
+                                    --------- ----           --------------- ------
+                                    C:\Demo   ChildFile1.txt            True  False
+                            #&gt;
+                        </code>
+                    </example>
+                    <example>
+                        <summary>Called on a non-existing file but parent directory does exist.</summary>
+                        <remarks>
+                            <p>
+                                No exception is thrown and the <c>FileInfo</c> object is unchanged.
+                            </p>
+                            <dl>
+                                <dt>Notice:</dt>
+                                <dd>- Using the <b>Delete</b> method would have had the exact same results in this scenario.</dd>
+                            </dl>
+                        </remarks>
+                        <code language="csharp">
+                            var file = new FileInfo("C:\\Demo\\ChildFile4.txt");
+
+                            Console.WriteLine("File Information:");
+                            Console.WriteLine(GetFileTable(new[] { file }, includeDirectory: true));
+
+                            Console.WriteLine("Deleting file...");
+                            file.TryDelete();
+
+                            Console.WriteLine("File Information after delete:");
+                            Console.WriteLine(GetFileTable(new[] { file }, includeDirectory: true));
+
+                            /*
+                            File Information:
+                                    Directory Name           DirectoryExists Exists
+                                    --------- ----           --------------- ------
+                                    C:\Demo   ChildFile4.txt            True  False
+                            Deleting file...
+                            File Information after delete:
+                                    Directory Name           DirectoryExists Exists
+                                    --------- ----           --------------- ------
+                                    C:\Demo   ChildFile4.txt            True  False
+                            */
+                        </code>
+                        <code language="powershell">
+                            $file = New-Object System.IO.FileInfo 'C:\Demo\ChildFile4.txt'
+
+                            Write-Host "File Information:"
+                            Write-Host (Get-FileTable -Files $file -IncludeDirectory)
+
+                            Write-Host "Deleting file..."
+                            $file.TryDelete()
+
+                            Write-Host "File Information after delete:"
+                            Write-Host (Get-FileTable -Files $file -IncludeDirectory)
+
+                            &lt;#
+                            Output:
+                            File Information:
+                                    Directory Name           DirectoryExists Exists
+                                    --------- ----           --------------- ------
+                                    C:\Demo   ChildFile4.txt            True  False
+                            Deleting file...
+                            File Information after delete:
+                                    Directory Name           DirectoryExists Exists
+                                    --------- ----           --------------- ------
+                                    C:\Demo   ChildFile4.txt            True  False
+                            #&gt;
+                        </code>
+                    </example>
+                    <example>
+                        <summary>Called on a non-existing file and parent directory does not exist.</summary>
+                        <remarks>
+                            <p>
+                                No exception is thrown and the <c>FileInfo</c> object is unchanged.
+                            </p>
+                            <dl>
+                                <dt>Notice:</dt>
+                                <dd>- Using the <b>Delete</b> method would have caused an exception to be thrown.</dd>
+                            </dl>
+                        </remarks>
+                        <code language="csharp">
+                            var file = new FileInfo("C:\\Demo\\ChildDir4\\ChildFile4.txt");
+
+                            Console.WriteLine("File Information:");
+                            Console.WriteLine(GetFileTable(new[] { file }, includeDirectory: true));
+
+                            Console.WriteLine("Deleting file...");
+                            file.TryDelete();
+
+                            Console.WriteLine("File Information after delete:");
+                            Console.WriteLine(GetFileTable(new[] { file }, includeDirectory: true));
+
+                            /*
+                            File Information:
+                                    Directory         Name           DirectoryExists Exists
+                                    ---------         ----           --------------- ------
+                                    C:\Demo\ChildDir4 ChildFile4.txt           False  False
+                            Deleting file...
+                            File Information after delete:
+                                    Directory         Name           DirectoryExists Exists
+                                    ---------         ----           --------------- ------
+                                    C:\Demo\ChildDir4 ChildFile4.txt           False  False
+                            */
+                        </code>
+                        <code language="powershell">
+                            $file = New-Object System.IO.FileInfo 'C:\Demo\ChildDir4\ChildFile4.txt'
+
+                            Write-Host "File Information:"
+                            Write-Host (Get-FileTable -Files $file -IncludeDirectory)
+
+                            Write-Host "Deleting file..."
+                            $file.TryDelete()
+
+                            Write-Host "File Information after delete:"
+                            Write-Host (Get-FileTable -Files $file -IncludeDirectory)
+
+                            &lt;#
+                            Output:
+                            File Information:
+                                    Directory         Name           DirectoryExists Exists
+                                    ---------         ----           --------------- ------
+                                    C:\Demo\ChildDir4 ChildFile4.txt           False  False
+                            Deleting file...
+                            File Information after delete:
+                                    Directory         Name           DirectoryExists Exists
+                                    ---------         ----           --------------- ------
+                                    C:\Demo\ChildDir4 ChildFile4.txt           False  False
+                            #&gt;
+                        </code>
+                    </example>
+                </Member>
+            </Members>
+        </FileInfoExtensions>
+    </IOInfoExtensions>
+</XmlCommentDocs>

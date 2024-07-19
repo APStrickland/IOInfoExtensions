@@ -8,4 +8,4 @@ The [**IOInfoExtensions**](src/IOInfoExtensions/) project generates a nuget pack
 The [**IOInfoExtensions.PowerShell**](src/IOInfoExtensions.PowerShell/) project creates a PowerShell module that can be imported in 5.1+. It contians [wrappers](src/IOInfoExtensions.PowerShell/ExtensionsWrapper.cs) around [**IOInfoExtensions**](src/IOInfoExtensions/) methods and imports them as types into PowerShell. This allows native `.methodName()` usage.
 
 ## Technical Documentation
-The technical documentation with examples can be found [here](https://apstrickland.github.io/ioinfoextensions/index.html).
+The technical documentation with examples can be found [here](https://apstrickland.github.io/IOInfoExtensions/).

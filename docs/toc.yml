@@ -1,0 +1,4 @@
+- name: GitHub Source
+  href: https://github.com/APStrickland/IOInfoExtensions
+- name: Documentation
+  href: /api

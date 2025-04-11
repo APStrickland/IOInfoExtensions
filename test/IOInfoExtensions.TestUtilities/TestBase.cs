@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
 
 namespace IOInfoExtensions.TestUtilities
 {
@@ -39,6 +40,8 @@ namespace IOInfoExtensions.TestUtilities
         {
             if (disposing)
             {
+                Thread.Sleep(400);
+                GC.WaitForPendingFinalizers();
                 testRootDirectory.Delete(true);
             }
         }

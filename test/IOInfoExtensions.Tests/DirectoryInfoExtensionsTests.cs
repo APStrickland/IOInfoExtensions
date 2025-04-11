@@ -118,6 +118,7 @@ namespace IOInfoExtensions.Tests
         [InlineData(true, true, true, true, true, false)]
         public void CopyContentToCopiesSuccessfully(bool copyEmpty, bool overwrite, bool clean, bool populateTarget, bool emptyDirExists, bool extraExists)
         {
+            Console.WriteLine($"CopyContentToCopiesSuccessfully - SourceDirectory: {sourceRootDirectory} DestinationDirectory: {destinationRootDirectory}");
             // Arrange
             if (populateTarget)
             {

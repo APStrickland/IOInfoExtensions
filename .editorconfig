@@ -248,6 +248,7 @@ dotnet_diagnostic.IDE0079.severity = none
 
 # Order elements in documentation comment
 dotnet_diagnostic.rcs1232.severity = warning
+csharp_prefer_system_threading_lock = true:suggestion
 
 ############################
 #### Specific Overrides ####

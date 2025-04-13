@@ -40,9 +40,25 @@ namespace IOInfoExtensions.TestUtilities
         {
             if (disposing)
             {
-                Thread.Sleep(400);
-                GC.WaitForPendingFinalizers();
-                testRootDirectory.Delete(true);
+                testRootDirectory.Refresh();
+                var tries = 0;
+
+                while (testRootDirectory.Exists)
+                {
+                    tries++;
+                    if (tries > 2) { Console.WriteLine($"Clean up attempt #{tries}"); }
+
+                    try
+                    {
+                        testRootDirectory.Delete(true);
+                    }
+                    catch (IOException)
+                    {
+                        Thread.Sleep(250);
+                    }
+
+                    testRootDirectory.Refresh();
+                }
             }
         }
     }

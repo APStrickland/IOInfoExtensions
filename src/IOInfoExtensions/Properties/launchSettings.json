@@ -8,7 +8,7 @@
     "Start in PowerShell Core": {
       "executablePath": "C:\\Program Files\\PowerShell\\7\\pwsh.exe",
       "commandName": "Executable",
-      "commandLineArgs": "-noexit -command &{ Import-Module .\\\\IOInfoExtensions.psd1 -Verbose }"
+      "commandLineArgs": "-noexit"
     }
   }
 }

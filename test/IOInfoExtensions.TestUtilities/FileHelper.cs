@@ -13,11 +13,20 @@ namespace IOInfoExtensions.TestUtilities
             foreach (var fileName in fileNames)
             {
                 var path = Path.Combine(directory.FullName, fileName);
-                using (var output = new StreamWriter(path))
+                StreamWriter writer = null;
+                try
                 {
-                    output.WriteLine(path);
+                    writer = new StreamWriter(path);
+                    writer.WriteLine(path);
+                }
+                finally
+                {
+                    writer?.Close();
+                    writer?.Dispose();
                 }
             }
+
+            GC.Collect();
         }
 
         public static bool HaveSameHash(FileInfo left, FileInfo right) =>
@@ -30,17 +39,29 @@ namespace IOInfoExtensions.TestUtilities
                 return string.Empty;
             }
 
-            using (var sha1 = SHA1.Create()) //new SHA1Managed())
+            SHA1 hasher = null;
+            StreamReader reader = null;
+
+            try
             {
-                var hash = sha1.ComputeHash(Encoding.UTF8.GetBytes(File.ReadAllText(file.FullName)));
-                var sb = new StringBuilder(hash.Length * 2);
+                hasher = SHA1.Create();
+                reader = new StreamReader(file.FullName);
+                var hash = hasher.ComputeHash(Encoding.UTF8.GetBytes(reader.ReadToEnd()));
+                var builder = new StringBuilder(hash.Length * 2);
 
                 foreach (var b in hash)
                 {
-                    _ = sb.Append(b.ToString("X2"));
+                    _ = builder.Append(b.ToString("X2"));
                 }
 
-                return sb.ToString();
+                return builder.ToString();
+            }
+            finally
+            {
+                reader?.Close();
+                reader?.Dispose();
+                hasher?.Dispose();
+                GC.Collect();
             }
         }
     }

@@ -4,6 +4,7 @@
     <AssemblyTitle>IOInfo Extensions for PowerShell</AssemblyTitle>
     <AssemblyName>IOInfoExtensions.PowerShell</AssemblyName>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
@@ -14,9 +15,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Module\IOInfoExtensions.psd1" />
-    <Content Include="Module\IOInfoExtensions.psm1" />
-    <Content Include="Module\IOInfoExtensions.types.ps1xml" />
+    <Content Include="Module\IOInfoExtensions.PowerShell.psd1" />
+    <Content Include="Module\IOInfoExtensions.PowerShell.types.ps1xml" />
+    <Content Include="Module\about_IOInfoExtensions.PowerShell.help.txt" />
   </ItemGroup>
 
   <ItemGroup>

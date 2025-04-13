@@ -3,6 +3,7 @@ using IOInfoExtensions.TestUtilities;
 using System;
 using System.IO;
 using System.Linq;
+using System.Security.AccessControl;
 using Xunit;
 
 namespace IOInfoExtensions.Tests
@@ -118,7 +119,6 @@ namespace IOInfoExtensions.Tests
         [InlineData(true, true, true, true, true, false)]
         public void CopyContentToCopiesSuccessfully(bool copyEmpty, bool overwrite, bool clean, bool populateTarget, bool emptyDirExists, bool extraExists)
         {
-            Console.WriteLine($"CopyContentToCopiesSuccessfully - SourceDirectory: {sourceRootDirectory} DestinationDirectory: {destinationRootDirectory}");
             // Arrange
             if (populateTarget)
             {
@@ -150,6 +150,74 @@ namespace IOInfoExtensions.Tests
 
             // Assert
             _ = nonExistentDirectory.Exists.Should().BeFalse();
+        }
+
+        [Fact]
+        public void GetDirectorySucceedsIfNoAccessToSibling()
+        {
+            // Arrange
+            var siblingDirectory = new DirectoryInfo(Path.Combine(sourceRootDirectory.FullName, "NoAccess"));
+            siblingDirectory.Create();
+            siblingDirectory.CreateSubdirectory("Nested");
+
+            try
+            {
+                // Arrange Continued
+                var acl = new DirectorySecurity();
+                acl.AddAccessRule(new FileSystemAccessRule(@"NT AUTHORITY\SYSTEM", FileSystemRights.FullControl, InheritanceFlags.ObjectInherit | InheritanceFlags.ContainerInherit, PropagationFlags.None, AccessControlType.Allow));
+                acl.AddAccessRule(new FileSystemAccessRule(@"BUILTIN\Administrators", FileSystemRights.FullControl, InheritanceFlags.ObjectInherit | InheritanceFlags.ContainerInherit, PropagationFlags.None, AccessControlType.Allow));
+                acl.SetAccessRuleProtection(true, false);
+                siblingDirectory.SetAccessControl(acl);
+
+                // Act
+                Action act = () => sourceRootDirectory.GetDirectory("ChildDir1");
+
+                // Assert
+                act.Should().NotThrow();
+            }
+            finally
+            {
+                if (null != siblingDirectory && siblingDirectory.Exists)
+                {
+                    var security = siblingDirectory.GetAccessControl();
+                    security.SetAccessRuleProtection(false, true);
+                    siblingDirectory.SetAccessControl(security);
+                }
+            }
+        }
+
+        [Fact]
+        public void GetDirectoryThrowsIfNoAccess()
+        {
+            // Arrange
+            var siblingDirectory = new DirectoryInfo(Path.Combine(sourceRootDirectory.FullName, "NoAccess"));
+            siblingDirectory.Create();
+            siblingDirectory.CreateSubdirectory("Nested");
+
+            try
+            {
+                // Arrange Continued
+                var acl = new DirectorySecurity();
+                acl.AddAccessRule(new FileSystemAccessRule(@"NT AUTHORITY\SYSTEM", FileSystemRights.FullControl, InheritanceFlags.ObjectInherit | InheritanceFlags.ContainerInherit, PropagationFlags.None, AccessControlType.Allow));
+                acl.AddAccessRule(new FileSystemAccessRule(@"BUILTIN\Administrators", FileSystemRights.FullControl, InheritanceFlags.ObjectInherit | InheritanceFlags.ContainerInherit, PropagationFlags.None, AccessControlType.Allow));
+                acl.SetAccessRuleProtection(true, false);
+                siblingDirectory.SetAccessControl(acl);
+
+                // Act
+                Action act = () => sourceRootDirectory.GetDirectory("NoAccess\\Nested");
+
+                // Assert
+                act.Should().Throw<Exception>();
+            }
+            finally
+            {
+                if (null != siblingDirectory && siblingDirectory.Exists)
+                {
+                    var security = siblingDirectory.GetAccessControl();
+                    security.SetAccessRuleProtection(false, true);
+                    siblingDirectory.SetAccessControl(security);
+                }
+            }
         }
     }
 }

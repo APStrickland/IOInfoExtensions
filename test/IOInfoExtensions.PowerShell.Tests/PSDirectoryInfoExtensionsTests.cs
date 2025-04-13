@@ -4,6 +4,7 @@ using IOInfoExtensions.TestUtilities;
 using System;
 using System.IO;
 using System.Linq;
+using System.Security.AccessControl;
 using System.Text;
 using System.Threading;
 using Xunit;
@@ -220,6 +221,83 @@ namespace IOInfoExtensions.Tests.PowerShell
             // Assert
             _ = nonExistentDirectory.Exists.Should().BeFalse();
             _ = results.Errors.Should().BeNullOrEmpty();
+        }
+
+        [Fact]
+        public void PSGetDirectorySucceedsIfNoAccessToSibling()
+        {
+            // Arrange
+            var siblingDirectory = new DirectoryInfo(Path.Combine(sourceRootDirectory.FullName, "NoAccess"));
+            siblingDirectory.Create();
+            siblingDirectory.CreateSubdirectory("Nested");
+
+            try
+            {
+                // Arrange Continued
+                var acl = new DirectorySecurity();
+                acl.AddAccessRule(new FileSystemAccessRule(@"NT AUTHORITY\SYSTEM", FileSystemRights.FullControl, InheritanceFlags.ObjectInherit | InheritanceFlags.ContainerInherit, PropagationFlags.None, AccessControlType.Allow));
+                acl.AddAccessRule(new FileSystemAccessRule(@"BUILTIN\Administrators", FileSystemRights.FullControl, InheritanceFlags.ObjectInherit | InheritanceFlags.ContainerInherit, PropagationFlags.None, AccessControlType.Allow));
+                acl.SetAccessRuleProtection(true, false);
+                siblingDirectory.SetAccessControl(acl);
+
+                var script = new StringBuilder();
+                _ = script.AppendLine($"$source = New-Object -TypeName System.IO.DirectoryInfo '{sourceRootDirectory.FullName}'");
+                _ = script.AppendLine($"$source.GetDirectory('ChildDir1')");
+
+                // Act
+                var results = PowerShellHelper.RunPowerShellScript(modulePath, script.ToString());
+
+                // Assert
+                _ = results.Errors.Should().BeNullOrEmpty();
+            }
+            finally
+            {
+                if (siblingDirectory.Exists)
+                {
+                    var security = siblingDirectory.GetAccessControl();
+                    security.SetAccessRuleProtection(false, true);
+                    siblingDirectory.SetAccessControl(security);
+                }
+            }
+        }
+
+        [Fact]
+        public void PSGetDirectoryThrowsIfNoAccess()
+        {
+            // Arrange
+            var siblingDirectory = new DirectoryInfo(Path.Combine(sourceRootDirectory.FullName, "NoAccess"));
+            siblingDirectory.Create();
+            siblingDirectory.CreateSubdirectory("Nested");
+
+            try
+            {
+                // Arrange Continued
+                var acl = new DirectorySecurity();
+                acl.AddAccessRule(new FileSystemAccessRule(@"NT AUTHORITY\SYSTEM", FileSystemRights.FullControl, InheritanceFlags.ObjectInherit | InheritanceFlags.ContainerInherit, PropagationFlags.None, AccessControlType.Allow));
+                acl.AddAccessRule(new FileSystemAccessRule(@"BUILTIN\Administrators", FileSystemRights.FullControl, InheritanceFlags.ObjectInherit | InheritanceFlags.ContainerInherit, PropagationFlags.None, AccessControlType.Allow));
+                acl.SetAccessRuleProtection(true, false);
+                siblingDirectory.SetAccessControl(acl);
+
+                var script = new StringBuilder();
+                _ = script.AppendLine($"$source = New-Object -TypeName System.IO.DirectoryInfo '{sourceRootDirectory.FullName}'");
+                _ = script.AppendLine($"$source.GetDirectory('NoAccess\\Nested')");
+
+                // Act
+                var results = PowerShellHelper.RunPowerShellScript(modulePath, script.ToString());
+
+                // Assert
+                results.Errors.Should().NotBeNullOrEmpty();
+                results.Errors.First().Exception.Message.Should().Be($"Access to the path '{Path.Combine(sourceRootDirectory.FullName, "NoAccess")}' is denied.");
+            }
+            finally
+            {
+                if (null != siblingDirectory && siblingDirectory.Exists)
+                {
+                    var security = siblingDirectory.GetAccessControl();
+                    security.SetAccessRuleProtection(false, true);
+                    siblingDirectory.SetAccessControl(security);
+                }
+            }
         }
     }
 }

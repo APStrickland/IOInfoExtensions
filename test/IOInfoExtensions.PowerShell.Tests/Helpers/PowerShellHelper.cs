@@ -31,8 +31,11 @@ namespace IOInfoExtensions.PowerShell.Tests.Helpers
         internal static PowerShellExecutionResults RunPowerShellScript(string modulePath, string script)
         {
             var results = new PowerShellExecutionResults();
-            using (var shell = System.Management.Automation.PowerShell.Create() ?? throw new Exception("Unable to create PowerShell instance."))
+            System.Management.Automation.PowerShell shell = null;
+
+            try
             {
+                shell = System.Management.Automation.PowerShell.Create() ?? throw new Exception("Unable to create PowerShell instance.");
                 _ = shell.AddScript("Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Force");
                 _ = shell.Invoke();
 
@@ -42,7 +45,7 @@ namespace IOInfoExtensions.PowerShell.Tests.Helpers
                 _ = shell.AddScript($"Import-Module -Name {modulePath}");
                 _ = shell.AddScript(script);
 
-                var output = shell.EndInvoke(shell.BeginInvoke());
+                var output = shell.Invoke();
                 output.Where(x => x != null && x.BaseObject is Hashtable).ToList().ForEach(x =>
                 {
                     var table = x.BaseObject as Hashtable;
@@ -57,6 +60,11 @@ namespace IOInfoExtensions.PowerShell.Tests.Helpers
                 });
 
                 results.Errors = shell.Streams?.Error?.ReadAll()?.ToList() ?? new List<ErrorRecord>();
+            }
+            finally
+            {
+                shell?.Streams?.Error?.Dispose();
+                shell?.Dispose();
             }
 
             return results;

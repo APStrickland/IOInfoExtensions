@@ -223,6 +223,7 @@ namespace IOInfoExtensions.Tests.PowerShell
             _ = results.Errors.Should().BeNullOrEmpty();
         }
 
+#if OS_WINDOWS
         [Fact]
         public void PSGetDirectorySucceedsIfNoAccessToSibling()
         {
@@ -300,4 +301,5 @@ namespace IOInfoExtensions.Tests.PowerShell
             }
         }
     }
+#endif
 }

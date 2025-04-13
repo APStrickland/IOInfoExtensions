@@ -3,6 +3,7 @@ using IOInfoExtensions.TestUtilities;
 using System;
 using System.IO;
 using System.Linq;
+using System.Runtime.Versioning;
 using System.Security.AccessControl;
 using Xunit;
 
@@ -152,6 +153,7 @@ namespace IOInfoExtensions.Tests
             _ = nonExistentDirectory.Exists.Should().BeFalse();
         }
 
+#if OS_WINDOWS
         [Fact]
         public void GetDirectorySucceedsIfNoAccessToSibling()
         {
@@ -220,4 +222,5 @@ namespace IOInfoExtensions.Tests
             }
         }
     }
+#endif
 }

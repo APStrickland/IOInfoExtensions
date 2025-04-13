@@ -14,6 +14,10 @@
     <ProjectReference Include="..\IOInfoExtensions.TestUtilities\IOInfoExtensions.TestUtilities.csproj" />
   </ItemGroup>
 
+  <PropertyGroup Condition="$([MSBuild]::IsOSPlatform('Windows'))">
+    <DefineConstants>OS_WINDOWS</DefineConstants>
+  </PropertyGroup>
+
   <ItemGroup Condition=" '$(TargetFramework)' != 'net462' ">
     <PackageReference Include="xunit.runner.visualstudio" Version="3.0.2">
       <PrivateAssets>all</PrivateAssets>

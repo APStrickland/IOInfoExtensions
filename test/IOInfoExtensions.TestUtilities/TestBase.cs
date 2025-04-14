@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
 
 namespace IOInfoExtensions.TestUtilities
 {
@@ -39,7 +40,25 @@ namespace IOInfoExtensions.TestUtilities
         {
             if (disposing)
             {
-                testRootDirectory.Delete(true);
+                testRootDirectory.Refresh();
+                var tries = 0;
+
+                while (testRootDirectory.Exists)
+                {
+                    tries++;
+                    if (tries > 2) { Console.WriteLine($"Clean up attempt #{tries}"); }
+
+                    try
+                    {
+                        testRootDirectory.Delete(true);
+                    }
+                    catch (IOException)
+                    {
+                        Thread.Sleep(250);
+                    }
+
+                    testRootDirectory.Refresh();
+                }
             }
         }
     }

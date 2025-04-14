@@ -79,12 +79,12 @@ if ($moduleSource -eq $moduleDirectory)
     throw "ModuleDirectory cannot be the same as the module source directory"
 }
 
-Write-Verbose "Copying module files from $moduleSource"
+Write-Verbose "Copying module files from $moduleSource to $moduleDirectory"
 $moduleSource |
     Get-ChildItem |
     Copy-Item -Destination $moduleDirectory
 
-Write-Verbose "Copying binary files from $BinaryOutputDirectory"
+Write-Verbose "Copying binary files from $BinaryOutputDirectory to $moduleDirectory"
 $BinaryOutputDirectory |
     Get-ChildItem -Filter 'IOInfoExtensions.*dll*' |
     Copy-Item -Destination $moduleDirectory

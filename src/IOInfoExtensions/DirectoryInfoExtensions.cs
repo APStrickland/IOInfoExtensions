@@ -20,21 +20,32 @@ namespace IOInfoExtensions
                 throw new ArgumentException("The name of the child directory cannot contain a root.", nameof(name));
             }
 
-            name = name.TrimStart('.').Trim(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+            name = name.TrimStart('.').Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar).Trim(Path.DirectorySeparatorChar);
             FileSystemInfo matchingChild = null;
+            var path = string.Empty;
 
+            // Loop through the levels of the given name looking for the desired directory. This avoids permissions issues.
             if (directory.Exists)
             {
-                // See if a child at any nested level exists with the same leaf name. Then try to match the desired
-                // path. This allows for nested directories that don't exist.
-                matchingChild = Array.Find(directory.GetFileSystemInfos(Path.GetFileName(name), SearchOption.AllDirectories), x =>
-                    x.FullName
-                        .Remove(0, directory.FullName.Length)
-                        .TrimStart(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)
-                        .Equals(name, StringComparison.InvariantCultureIgnoreCase));
+                var parts = name.Split(Path.DirectorySeparatorChar);
+                for (var i = 0; i < parts.Length; i++)
+                {
+                    path = $"{path}{Path.DirectorySeparatorChar}{parts[i]}".Trim(Path.DirectorySeparatorChar);
+                    var items = directory.GetFileSystemInfos(path);
+
+                    if (items.Length == 0)
+                    {
+                        break;
+                    }
+
+                    if (path.Equals(name, StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        matchingChild = items[0];
+                    }
+                }
             }
 
-            #pragma warning disable IDE0046 // Convert to conditional expression - Leaving as is for readability and clarity
+#pragma warning disable IDE0046 // Convert to conditional expression - Leaving as is for readability and clarity
             if (!ignoreCase && matchingChild?.Name.Equals(name, StringComparison.InvariantCulture) == false)
             {
                 throw new DirectoryNotFoundException($"A child named '{name}' already exists but with a different case: {matchingChild.Name}.");
@@ -49,7 +60,7 @@ namespace IOInfoExtensions
             {
                 throw new DirectoryNotFoundException($"Cannot find child '{name}' because it does not exist and resolve was set to true.");
             }
-            #pragma warning restore IDE0046 // Convert to conditional expression
+#pragma warning restore IDE0046 // Convert to conditional expression
 
             return matchingChild != null
                 ? new DirectoryInfo(matchingChild.FullName)
@@ -69,23 +80,33 @@ namespace IOInfoExtensions
                 throw new ArgumentException("The name of the child file cannot contain a root.", nameof(name));
             }
 
-            name = name.TrimStart('.').Trim(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+            name = name.TrimStart('.').Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar).Trim(Path.DirectorySeparatorChar);
             FileSystemInfo matchingChild = null;
+            var path = string.Empty;
 
             if (directory.Exists)
             {
-                // See if a child at any nested level exists with the same leaf name. Then try to match the desired
-                // path. This allows for wildcards and nested directories that don't exist
-                matchingChild = Array.Find(directory.GetFileSystemInfos(Path.GetFileName(name), SearchOption.AllDirectories), x =>
-                    x.FullName
-                        .Remove(0, directory.FullName.Length)
-                        .TrimStart(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)
-                        .Equals(name, StringComparison.InvariantCultureIgnoreCase));
+                var parts = name.Split(Path.DirectorySeparatorChar);
+                for (var i = 0; i < parts.Length; i++)
+                {
+                    path = $"{path}{Path.DirectorySeparatorChar}{parts[i]}".Trim(Path.DirectorySeparatorChar);
+                    var items = directory.GetFileSystemInfos(path);
+
+                    if (items.Length == 0)
+                    {
+                        break;
+                    }
+
+                    if (path.Equals(name, StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        matchingChild = items[0];
+                    }
+                }
             }
 
             var relativePath = matchingChild?.FullName.Remove(0, directory.FullName.Length).TrimStart(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
 
-            #pragma warning disable IDE0046 // Convert to conditional expression - Leaving as is for readability and clarity
+#pragma warning disable IDE0046 // Convert to conditional expression - Leaving as is for readability and clarity
             if (!ignoreCase && matchingChild != null && !relativePath.Equals(name, StringComparison.InvariantCulture))
             {
                 throw new FileNotFoundException($"A child named '{name}' already exists but with a different case: {relativePath}.");
@@ -100,7 +121,7 @@ namespace IOInfoExtensions
             {
                 throw new FileNotFoundException($"Cannot find child '{name}' because it does not exist and resolve was set to true.");
             }
-            #pragma warning restore IDE0046 // Convert to conditional expression
+#pragma warning restore IDE0046 // Convert to conditional expression
 
             return matchingChild != null
                 ? new FileInfo(matchingChild.FullName)

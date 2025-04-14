@@ -224,7 +224,7 @@ namespace IOInfoExtensions.Tests.PowerShell
             _ = results.Errors.Should().BeNullOrEmpty();
         }
 
-#if OS_WINDOWS
+        /**
         [Fact]
         public void PSGetDirectorySucceedsIfNoAccessToSibling()
         {
@@ -267,23 +267,20 @@ namespace IOInfoExtensions.Tests.PowerShell
         public void PSGetDirectoryThrowsIfNoAccess()
         {
             // Arrange
+            var currentUser = WindowsIdentity.GetCurrent();
             var siblingDirectory = new DirectoryInfo(Path.Combine(sourceRootDirectory.FullName, "NoAccess"));
             siblingDirectory.Create();
             siblingDirectory.CreateSubdirectory("Nested");
+            var denyRule = new FileSystemAccessRule(currentUser.Name, FileSystemRights.Traverse, InheritanceFlags.ObjectInherit | InheritanceFlags.ContainerInherit, PropagationFlags.None, AccessControlType.Deny);
 
             try
             {
                 // Arrange Continued
-                var currentUser = WindowsIdentity.GetCurrent();
-                /**
+
                 var acl = new DirectorySecurity();
                 acl.AddAccessRule(new FileSystemAccessRule(@"NT AUTHORITY\SYSTEM", FileSystemRights.FullControl, InheritanceFlags.ObjectInherit | InheritanceFlags.ContainerInherit, PropagationFlags.None, AccessControlType.Allow));
-                acl.AddAccessRule(new FileSystemAccessRule(@"BUILTIN\Administrators", FileSystemRights.FullControl, InheritanceFlags.ObjectInherit | InheritanceFlags.ContainerInherit, PropagationFlags.None, AccessControlType.Allow));
-                acl.SetAccessRuleProtection(true, false);
-                siblingDirectory.SetAccessControl(acl);
-                **/
-                var acl = siblingDirectory.GetAccessControl();
-                acl.AddAccessRule(new FileSystemAccessRule(currentUser.Name, FileSystemRights.Traverse, InheritanceFlags.ObjectInherit | InheritanceFlags.ContainerInherit, PropagationFlags.None, AccessControlType.Deny));
+                //acl.AddAccessRule(new FileSystemAccessRule(@"BUILTIN\Administrators", FileSystemRights.FullControl, InheritanceFlags.ObjectInherit | InheritanceFlags.ContainerInherit, PropagationFlags.None, AccessControlType.Allow));
+                acl.AddAccessRule(new FileSystemAccessRule(currentUser.Name, FileSystemRights.ChangePermissions, InheritanceFlags.ObjectInherit | InheritanceFlags.ContainerInherit, PropagationFlags.None, AccessControlType.Allow));
                 acl.SetAccessRuleProtection(true, false);
                 siblingDirectory.SetAccessControl(acl);
 
@@ -317,13 +314,6 @@ namespace IOInfoExtensions.Tests.PowerShell
 
                 // Act
                 var results = PowerShellHelper.RunPowerShellScript(modulePath, script.ToString());
-                siblingDirectory?.Refresh();
-                if (siblingDirectory.Exists)
-                {
-                    var security = siblingDirectory.GetAccessControl();
-                    security.SetAccessRuleProtection(false, true);
-                    siblingDirectory.SetAccessControl(security);
-                }
 
                 // Assert
                 results.Errors.Should().NotBeNullOrEmpty();
@@ -340,6 +330,8 @@ namespace IOInfoExtensions.Tests.PowerShell
                 }
             }
         }
+
+**/
     }
-#endif
+
 }

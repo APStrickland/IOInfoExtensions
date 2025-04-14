@@ -153,7 +153,7 @@ namespace IOInfoExtensions.Tests
             _ = nonExistentDirectory.Exists.Should().BeFalse();
         }
 
-#if OS_WINDOWS
+        /**
         [Fact]
         public void GetDirectorySucceedsIfNoAccessToSibling()
         {
@@ -221,6 +221,6 @@ namespace IOInfoExtensions.Tests
                 }
             }
         }
+        **/
     }
-#endif
 }

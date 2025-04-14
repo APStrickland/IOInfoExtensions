@@ -280,9 +280,18 @@ namespace IOInfoExtensions.Tests.PowerShell
                 acl.SetAccessRuleProtection(true, false);
                 siblingDirectory.SetAccessControl(acl);
 
+                var currentUser = WindowsIdentity.GetCurrent();
+
                 Console.WriteLine(new string('=', 40));
+                Console.WriteLine($"Current user: {currentUser.Name}");
+                Console.WriteLine($"Groups: ");
+                foreach (SecurityIdentifier group in currentUser.Groups)
+                {
+                    Console.WriteLine($"    {group.Translate(typeof(NTAccount))}");
+                }
+
+                Console.WriteLine($"Running as Administrator: {currentUser.Owner != currentUser.User}");
                 Console.WriteLine($"Access rules for directory: {siblingDirectory.FullName}");
-                Console.WriteLine($"Current user: {WindowsIdentity.GetCurrent().Name}");
                 Console.WriteLine(new string('-', 40));
                 foreach (FileSystemAccessRule accessRule in siblingDirectory.GetAccessControl().GetAccessRules(true, true, typeof(NTAccount)))
                 {

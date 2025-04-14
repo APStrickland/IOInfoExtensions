@@ -5,6 +5,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Security.AccessControl;
+using System.Security.Principal;
 using System.Text;
 using System.Threading;
 using Xunit;
@@ -278,6 +279,23 @@ namespace IOInfoExtensions.Tests.PowerShell
                 acl.AddAccessRule(new FileSystemAccessRule(@"BUILTIN\Administrators", FileSystemRights.FullControl, InheritanceFlags.ObjectInherit | InheritanceFlags.ContainerInherit, PropagationFlags.None, AccessControlType.Allow));
                 acl.SetAccessRuleProtection(true, false);
                 siblingDirectory.SetAccessControl(acl);
+
+                Console.WriteLine(new string('=', 40));
+                Console.WriteLine($"Access rules for directory: {siblingDirectory.FullName}");
+                Console.WriteLine($"Current user: {WindowsIdentity.GetCurrent().Name}");
+                Console.WriteLine(new string('-', 40));
+                foreach (FileSystemAccessRule accessRule in siblingDirectory.GetAccessControl().GetAccessRules(true, true, typeof(NTAccount)))
+                {
+                    Console.WriteLine($"Identity: {accessRule.IdentityReference}");
+                    Console.WriteLine($"Access Control Type: {accessRule.AccessControlType}");
+                    Console.WriteLine($"Rights: {accessRule.FileSystemRights}");
+                    Console.WriteLine($"Inheritance Flags: {accessRule.InheritanceFlags}");
+                    Console.WriteLine($"Propagation Flags: {accessRule.PropagationFlags}");
+                    Console.WriteLine(new string('-', 40));
+                }
+
+                Console.WriteLine(new string('-', 40));
+                Console.WriteLine();
 
                 var script = new StringBuilder();
                 _ = script.AppendLine($"$source = New-Object -TypeName System.IO.DirectoryInfo '{sourceRootDirectory.FullName}'");

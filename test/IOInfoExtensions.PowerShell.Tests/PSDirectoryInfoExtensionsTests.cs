@@ -274,13 +274,18 @@ namespace IOInfoExtensions.Tests.PowerShell
             try
             {
                 // Arrange Continued
+                var currentUser = WindowsIdentity.GetCurrent();
+                /**
                 var acl = new DirectorySecurity();
                 acl.AddAccessRule(new FileSystemAccessRule(@"NT AUTHORITY\SYSTEM", FileSystemRights.FullControl, InheritanceFlags.ObjectInherit | InheritanceFlags.ContainerInherit, PropagationFlags.None, AccessControlType.Allow));
                 acl.AddAccessRule(new FileSystemAccessRule(@"BUILTIN\Administrators", FileSystemRights.FullControl, InheritanceFlags.ObjectInherit | InheritanceFlags.ContainerInherit, PropagationFlags.None, AccessControlType.Allow));
                 acl.SetAccessRuleProtection(true, false);
                 siblingDirectory.SetAccessControl(acl);
-
-                var currentUser = WindowsIdentity.GetCurrent();
+                **/
+                var acl = siblingDirectory.GetAccessControl();
+                acl.AddAccessRule(new FileSystemAccessRule(currentUser.Name, FileSystemRights.Traverse, InheritanceFlags.ObjectInherit | InheritanceFlags.ContainerInherit, PropagationFlags.None, AccessControlType.Deny));
+                acl.SetAccessRuleProtection(true, false);
+                siblingDirectory.SetAccessControl(acl);
 
                 Console.WriteLine(new string('=', 40));
                 Console.WriteLine($"Current user: {currentUser.Name}");
@@ -312,6 +317,13 @@ namespace IOInfoExtensions.Tests.PowerShell
 
                 // Act
                 var results = PowerShellHelper.RunPowerShellScript(modulePath, script.ToString());
+                siblingDirectory?.Refresh();
+                if (siblingDirectory.Exists)
+                {
+                    var security = siblingDirectory.GetAccessControl();
+                    security.SetAccessRuleProtection(false, true);
+                    siblingDirectory.SetAccessControl(security);
+                }
 
                 // Assert
                 results.Errors.Should().NotBeNullOrEmpty();
@@ -319,7 +331,8 @@ namespace IOInfoExtensions.Tests.PowerShell
             }
             finally
             {
-                if (null != siblingDirectory && siblingDirectory.Exists)
+                siblingDirectory?.Refresh();
+                if (siblingDirectory.Exists)
                 {
                     var security = siblingDirectory.GetAccessControl();
                     security.SetAccessRuleProtection(false, true);
